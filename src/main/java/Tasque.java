@@ -31,6 +31,32 @@ public class Tasque {
                 tasks[taskNumber - 1].markAsNotDone();
                 System.out.println("OK, I've marked this task as not done yet:");
                 System.out.println(tasks[taskNumber - 1].toString());
+            } else if (userInput.startsWith("todo ")) {
+                System.out.println("Got it. I've added this task:");
+                tasks[taskCount] = new Todo(userInput.substring(5));
+                System.out.println(tasks[taskCount].toString());
+                taskCount++;
+                System.out.println("Now you have " + taskCount + " tasks in the list");
+            } else if (userInput.startsWith("deadline ")) {
+                int byIndex = userInput.indexOf(" /by ");
+                String description = userInput.substring("deadline ".length(), byIndex);
+                String by = userInput.substring(byIndex + " /by ".length());
+                System.out.println("Got it. I've added this task:");
+                tasks[taskCount] = new Deadline(description, by);
+                System.out.println(tasks[taskCount].toString());
+                taskCount++;
+                System.out.println("Now you have " + taskCount + " tasks in the list");
+            } else if (userInput.startsWith("event ")) {
+                int fromIndex = userInput.indexOf(" /from ");
+                int toIndex = userInput.indexOf(" /to ");
+                String description = userInput.substring("event ".length(), fromIndex);
+                String from = userInput.substring(fromIndex + " /from ".length(), toIndex);
+                String to = userInput.substring(toIndex + " /to ".length());
+                System.out.println("Got it. I've added this task:");
+                tasks[taskCount] = new Event(description, from, to);
+                System.out.println(tasks[taskCount].toString());
+                taskCount++;
+                System.out.println("Now you have " + taskCount + " tasks in the list");
             } else {
                 tasks[taskCount] = new Task(userInput);
                 System.out.println("added: " + tasks[taskCount].getDescription());
