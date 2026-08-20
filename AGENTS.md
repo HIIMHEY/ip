@@ -150,6 +150,22 @@ The completion report should normally state:
 
 Do not turn an implementation report into a tutorial unless the user asks for an explanation.
 
+## Console UI regression testing
+
+After each completed Java implementation or change set, invoke the project-local
+`test-ui` skill. This requirement applies when the implementation is ready for
+verification, not after every intermediate file edit while work is in progress.
+
+Before invoking the skill, update `test/ui-test-plan.md` if the intended console
+behavior changed or durable regression coverage needs to change. Expected-output
+blocks contain the Tasque process's stdout only; terminal input echo is not part
+of expected stdout. Do not change expected output merely to make a regression
+pass.
+
+Report the test result and provide the separate INPUT and OUTPUT transcript for
+manual inspection. If a test fails, stop the test session at the first failure
+and report the failing case, expected stdout, and actual stdout.
+
 # Code review and checking mode
 
 When the user asks you to review, check, inspect, evaluate, or suggest improvements to code, behave as a reviewer rather than an implementer.
