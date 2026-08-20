@@ -1,5 +1,8 @@
+import java.util.Scanner;
+
 public class Tasque {
     public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
         String banner = "========================================\n"
                 + "                 TASQUE                 \n"
                 + "========================================";
@@ -7,6 +10,13 @@ public class Tasque {
         String exit = "\nGoodbye! See you again soon.";
         System.out.println(banner);
         System.out.println(greet);
-        System.out.println(exit);
+        while (true) {
+            String userInput = scanner.nextLine();
+            if (userInput.equals("bye")) {
+                break;
+            }
+            System.out.println(userInput);
+        }
+        System.out.print(exit);
     }
 }
