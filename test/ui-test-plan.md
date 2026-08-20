@@ -11,7 +11,7 @@ runner.
 ### Inputs
 
 ```console-input
-read book
+todo read book
 list
 mark 1
 unmark 1
@@ -27,13 +27,183 @@ bye
 
 Hello! I'm Tasque.
 What can I do for you?
-added: read book
+Got it. I've added this task:
+[T][ ] read book
+Now you have 1 tasks in the list
 Here are the tasks in your list:
-1.[ ] read book
+1.[T][ ] read book
 Nice! I've marked this task as done:
-[X] read book
+[T][X] read book
 OK, I've marked this task as not done yet:
-[ ] read book
+[T][ ] read book
+
+Goodbye! See you again soon.
+```
+
+## TC-L5-01: Reject empty Todo descriptions
+
+**Aim:** Reject missing or blank Todo descriptions without terminating Tasque or adding a task.
+
+### Inputs
+
+```console-input
+todo
+todo   
+todo read book
+list
+bye
+```
+
+### Expected output
+
+```console-output
+========================================
+                 TASQUE                 
+========================================
+
+Hello! I'm Tasque.
+What can I do for you?
+OOPS!!! The description of a todo cannot be empty.
+OOPS!!! The description of a todo cannot be empty.
+Got it. I've added this task:
+[T][ ] read book
+Now you have 1 tasks in the list
+Here are the tasks in your list:
+1.[T][ ] read book
+
+Goodbye! See you again soon.
+```
+
+## TC-L5-02: Reject incomplete Deadlines
+
+**Aim:** Reject Deadlines with missing descriptions, missing `/by`, or empty `/by` values.
+
+### Inputs
+
+```console-input
+deadline
+deadline /by Sunday
+deadline return book
+deadline return book /by
+deadline return book /by Sunday
+list
+bye
+```
+
+### Expected output
+
+```console-output
+========================================
+                 TASQUE                 
+========================================
+
+Hello! I'm Tasque.
+What can I do for you?
+OOPS!!! The description of a deadline cannot be empty.
+OOPS!!! The description of a deadline cannot be empty.
+OOPS!!! A deadline must include /by followed by when it is due.
+OOPS!!! The /by value of a deadline cannot be empty.
+Got it. I've added this task:
+[D][ ] return book (by: Sunday)
+Now you have 1 tasks in the list
+Here are the tasks in your list:
+1.[D][ ] return book (by: Sunday)
+
+Goodbye! See you again soon.
+```
+
+## TC-L5-03: Reject incomplete Events
+
+**Aim:** Reject Events with missing descriptions, missing delimiters, or empty start/end values.
+
+### Inputs
+
+```console-input
+event
+event /from Mon 2pm /to 4pm
+event project meeting /to 4pm
+event project meeting /from Mon 2pm
+event project meeting /from /to 4pm
+event project meeting /from Mon 2pm /to
+event project meeting /from Mon 2pm /to 4pm
+list
+bye
+```
+
+### Expected output
+
+```console-output
+========================================
+                 TASQUE                 
+========================================
+
+Hello! I'm Tasque.
+What can I do for you?
+OOPS!!! The description of an event cannot be empty.
+OOPS!!! The description of an event cannot be empty.
+OOPS!!! An event must include /from followed by its start.
+OOPS!!! An event must include /to followed by its end.
+OOPS!!! The /from value of an event cannot be empty.
+OOPS!!! The /to value of an event cannot be empty.
+Got it. I've added this task:
+[E][ ] project meeting (from: Mon 2pm to: 4pm)
+Now you have 1 tasks in the list
+Here are the tasks in your list:
+1.[E][ ] project meeting (from: Mon 2pm to: 4pm)
+
+Goodbye! See you again soon.
+```
+
+## TC-L5-04: Reject invalid commands and task numbers
+
+**Aim:** Reject unknown commands and invalid mark/unmark task numbers without changing tasks or terminating Tasque.
+
+### Inputs
+
+```console-input
+blah
+mark
+unmark
+mark abc
+unmark xyz
+todo read book
+mark 0
+unmark -1
+mark 2
+unmark 2
+mark 1
+unmark 1
+list
+bye
+```
+
+### Expected output
+
+```console-output
+========================================
+                 TASQUE                 
+========================================
+
+Hello! I'm Tasque.
+What can I do for you?
+OOPS!!! I do not recognize that command.
+OOPS!!! The mark command needs a task number.
+OOPS!!! The unmark command needs a task number.
+OOPS!!! The task number must be a positive whole number.
+OOPS!!! The task number must be a positive whole number.
+Got it. I've added this task:
+[T][ ] read book
+Now you have 1 tasks in the list
+OOPS!!! The task number must be a positive whole number.
+OOPS!!! The task number must be a positive whole number.
+OOPS!!! Task 2 does not exist in the list.
+OOPS!!! Task 2 does not exist in the list.
+Nice! I've marked this task as done:
+[T][X] read book
+OK, I've marked this task as not done yet:
+[T][ ] read book
+Here are the tasks in your list:
+1.[T][ ] read book
 
 Goodbye! See you again soon.
 ```
