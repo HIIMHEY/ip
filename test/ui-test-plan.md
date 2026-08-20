@@ -360,3 +360,144 @@ Here are the tasks in your list:
 
 Goodbye! See you again soon.
 ```
+
+## TC-L6-01: Delete the only task
+
+**Aim:** Delete the only task, report the removed task, and leave an empty task list.
+
+### Inputs
+
+```console-input
+todo read book
+delete 1
+list
+bye
+```
+
+### Expected output
+
+```console-output
+========================================
+                 TASQUE                 
+========================================
+
+Hello! I'm Tasque.
+What can I do for you?
+Got it. I've added this task:
+[T][ ] read book
+Now you have 1 tasks in the list
+Noted. I've removed this task:
+[T][ ] read book
+Now you have 0 tasks in the list
+Here are the tasks in your list:
+
+Goodbye! See you again soon.
+```
+
+## TC-L6-02: Delete first and middle tasks
+
+**Aim:** Preserve order, renumber remaining tasks, and support mark/unmark after deletion.
+
+### Inputs
+
+```console-input
+todo first task
+deadline second task /by Sunday
+event third task /from Mon 2pm /to 4pm
+todo fourth task
+delete 1
+list
+delete 2
+list
+mark 2
+unmark 2
+list
+bye
+```
+
+### Expected output
+
+```console-output
+========================================
+                 TASQUE                 
+========================================
+
+Hello! I'm Tasque.
+What can I do for you?
+Got it. I've added this task:
+[T][ ] first task
+Now you have 1 tasks in the list
+Got it. I've added this task:
+[D][ ] second task (by: Sunday)
+Now you have 2 tasks in the list
+Got it. I've added this task:
+[E][ ] third task (from: Mon 2pm to: 4pm)
+Now you have 3 tasks in the list
+Got it. I've added this task:
+[T][ ] fourth task
+Now you have 4 tasks in the list
+Noted. I've removed this task:
+[T][ ] first task
+Now you have 3 tasks in the list
+Here are the tasks in your list:
+1.[D][ ] second task (by: Sunday)
+2.[E][ ] third task (from: Mon 2pm to: 4pm)
+3.[T][ ] fourth task
+Noted. I've removed this task:
+[E][ ] third task (from: Mon 2pm to: 4pm)
+Now you have 2 tasks in the list
+Here are the tasks in your list:
+1.[D][ ] second task (by: Sunday)
+2.[T][ ] fourth task
+Nice! I've marked this task as done:
+[T][X] fourth task
+OK, I've marked this task as not done yet:
+[T][ ] fourth task
+Here are the tasks in your list:
+1.[D][ ] second task (by: Sunday)
+2.[T][ ] fourth task
+
+Goodbye! See you again soon.
+```
+
+## TC-L6-03: Reject invalid delete commands
+
+**Aim:** Reject invalid delete task numbers without modifying tasks or terminating Tasque.
+
+### Inputs
+
+```console-input
+delete
+delete abc
+delete 0
+delete -1
+delete 1
+todo read book
+delete 2
+list
+bye
+```
+
+### Expected output
+
+```console-output
+========================================
+                 TASQUE                 
+========================================
+
+Hello! I'm Tasque.
+What can I do for you?
+OOPS!!! The delete command needs a task number.
+OOPS!!! The task number must be a positive whole number.
+OOPS!!! The task number must be a positive whole number.
+OOPS!!! The task number must be a positive whole number.
+OOPS!!! Task 1 does not exist in the list.
+Got it. I've added this task:
+[T][ ] read book
+Now you have 1 tasks in the list
+OOPS!!! Task 2 does not exist in the list.
+Here are the tasks in your list:
+1.[T][ ] read book
+
+Goodbye! See you again soon.
+```

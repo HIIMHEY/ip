@@ -1,10 +1,10 @@
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Tasque {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-        Task[] tasks = new Task[100];
-        int taskCount = 0;
+        ArrayList<Task> tasks = new ArrayList<>();
         String banner = "========================================\n"
                 + "                 TASQUE                 \n"
                 + "========================================";
@@ -20,29 +20,29 @@ public class Tasque {
             try {
                 if (userInput.equals("list")) {
                     System.out.println("Here are the tasks in your list:");
-                    for (int i = 0; i < taskCount; i++) {
-                        System.out.println((i + 1) + "." + tasks[i].toString());
+                    for (int i = 0; i < tasks.size(); i++) {
+                        System.out.println((i + 1) + "." + tasks.get(i).toString());
                     }
                 } else if (userInput.equals("mark") || userInput.startsWith("mark ")) {
-                    int taskNumber = getTaskNumber(userInput, "mark", taskCount);
-                    tasks[taskNumber - 1].markAsDone();
+                    int taskNumber = getTaskNumber(userInput, "mark", tasks.size());
+                    tasks.get(taskNumber - 1).markAsDone();
                     System.out.println("Nice! I've marked this task as done:");
-                    System.out.println(tasks[taskNumber - 1].toString());
+                    System.out.println(tasks.get(taskNumber - 1).toString());
                 } else if (userInput.equals("unmark") || userInput.startsWith("unmark ")) {
-                    int taskNumber = getTaskNumber(userInput, "unmark", taskCount);
-                    tasks[taskNumber - 1].markAsNotDone();
+                    int taskNumber = getTaskNumber(userInput, "unmark", tasks.size());
+                    tasks.get(taskNumber - 1).markAsNotDone();
                     System.out.println("OK, I've marked this task as not done yet:");
-                    System.out.println(tasks[taskNumber - 1].toString());
+                    System.out.println(tasks.get(taskNumber - 1).toString());
                 } else if (userInput.equals("todo") || userInput.startsWith("todo ")) {
                     String description = userInput.substring("todo".length()).trim();
                     if (description.isEmpty()) {
                         throw new TasqueException("The description of a todo cannot be empty.");
                     }
                     System.out.println("Got it. I've added this task:");
-                    tasks[taskCount] = new Todo(description);
-                    System.out.println(tasks[taskCount].toString());
-                    taskCount++;
-                    System.out.println("Now you have " + taskCount + " tasks in the list");
+                    Task task = new Todo(description);
+                    tasks.add(task);
+                    System.out.println(task.toString());
+                    System.out.println("Now you have " + tasks.size() + " tasks in the list");
                 } else if (userInput.equals("deadline") || userInput.startsWith("deadline ")) {
                     String deadlineDetails = userInput.substring("deadline".length()).trim();
                     if (deadlineDetails.isEmpty()) {
@@ -61,10 +61,10 @@ public class Tasque {
                         throw new TasqueException("The /by value of a deadline cannot be empty.");
                     }
                     System.out.println("Got it. I've added this task:");
-                    tasks[taskCount] = new Deadline(description, by);
-                    System.out.println(tasks[taskCount].toString());
-                    taskCount++;
-                    System.out.println("Now you have " + taskCount + " tasks in the list");
+                    Task task = new Deadline(description, by);
+                    tasks.add(task);
+                    System.out.println(task.toString());
+                    System.out.println("Now you have " + tasks.size() + " tasks in the list");
                 } else if (userInput.equals("event") || userInput.startsWith("event ")) {
                     String eventDetails = userInput.substring("event".length()).trim();
                     if (eventDetails.isEmpty()) {
@@ -94,10 +94,17 @@ public class Tasque {
                         throw new TasqueException("The /to value of an event cannot be empty.");
                     }
                     System.out.println("Got it. I've added this task:");
-                    tasks[taskCount] = new Event(description, from, to);
-                    System.out.println(tasks[taskCount].toString());
-                    taskCount++;
-                    System.out.println("Now you have " + taskCount + " tasks in the list");
+                    Task task = new Event(description, from, to);
+                    tasks.add(task);
+                    System.out.println(task.toString());
+                    System.out.println("Now you have " + tasks.size() + " tasks in the list");
+                } else if (userInput.equals("delete") || userInput.startsWith("delete ")) {
+                    int taskNumber = getTaskNumber(userInput, "delete", tasks.size());
+                    int taskIndex = taskNumber - 1;
+                    Task deletedTask = tasks.remove(taskIndex);
+                    System.out.println("Noted. I've removed this task:");
+                    System.out.println(deletedTask.toString());
+                    System.out.println("Now you have " + tasks.size() + " tasks in the list");
                 } else {
                     throw new TasqueException("I do not recognize that command.");
                 }
@@ -108,7 +115,7 @@ public class Tasque {
         System.out.print(exit);
     }
 
-    private static int getTaskNumber(String userInput, String command, int taskCount)
+    private static int getTaskNumber(String userInput, String command, int numberOfTasks)
             throws TasqueException {
         String taskNumberText = userInput.substring(command.length()).trim();
         if (taskNumberText.isEmpty()) {
@@ -125,7 +132,7 @@ public class Tasque {
         if (taskNumber <= 0) {
             throw new TasqueException("The task number must be a positive whole number.");
         }
-        if (taskNumber > taskCount) {
+        if (taskNumber > numberOfTasks) {
             throw new TasqueException("Task " + taskNumber + " does not exist in the list.");
         }
         return taskNumber;
