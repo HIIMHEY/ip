@@ -3,6 +3,8 @@ import java.util.Scanner;
 public class Tasque {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
+        String[] tasks = new String[100];
+        int taskCount = 0;
         String banner = "========================================\n"
                 + "                 TASQUE                 \n"
                 + "========================================";
@@ -15,7 +17,15 @@ public class Tasque {
             if (userInput.equals("bye")) {
                 break;
             }
-            System.out.println(userInput);
+            if (userInput.equals("list")) {
+                for (int i = 0; i < taskCount; i++) {
+                    System.out.println((i + 1) + ". " + tasks[i]);
+                }
+            } else {
+                tasks[taskCount] = userInput;
+                taskCount++;
+                System.out.println("added: " + userInput);
+            }
         }
         System.out.print(exit);
     }
