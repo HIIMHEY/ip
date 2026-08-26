@@ -40,6 +40,110 @@ OK, I've marked this task as not done yet:
 Goodbye! See you again soon.
 ```
 
+## TC-L8-01: Parse and format ISO deadline dates
+
+**Aim:** Verify that a valid ISO deadline date is parsed as a date and displayed in the user-facing `MMM d yyyy` format.
+
+### Inputs
+
+```console-input
+deadline submit report /by 2026-08-26
+list
+bye
+```
+
+### Expected output
+
+```console-output
+========================================
+                 TASQUE                 
+========================================
+
+Hello! I'm Tasque.
+What can I do for you?
+Got it. I've added this task:
+[D][ ] submit report (by: Aug 26 2026)
+Now you have 1 tasks in the list
+Here are the tasks in your list:
+1.[D][ ] submit report (by: Aug 26 2026)
+
+Goodbye! See you again soon.
+```
+
+## TC-L8-02: Persist ISO deadline dates across restart
+
+**Aim:** Verify that a deadline is stored in ISO form and restored with the same formatted display after restarting Tasque.
+
+### Inputs
+
+```console-input
+deadline submit report /by 2026-08-26
+bye
+--- RESTART ---
+list
+bye
+```
+
+### Expected output
+
+```console-output
+========================================
+                 TASQUE                 
+========================================
+
+Hello! I'm Tasque.
+What can I do for you?
+Got it. I've added this task:
+[D][ ] submit report (by: Aug 26 2026)
+Now you have 1 tasks in the list
+
+Goodbye! See you again soon.
+========================================
+                 TASQUE                 
+========================================
+
+Hello! I'm Tasque.
+What can I do for you?
+Here are the tasks in your list:
+1.[D][ ] submit report (by: Aug 26 2026)
+
+Goodbye! See you again soon.
+```
+
+## TC-L8-03: Reject invalid deadline dates and continue
+
+**Aim:** Reject textual and impossible ISO-looking dates while keeping Tasque running and allowing a later valid deadline.
+
+### Inputs
+
+```console-input
+deadline invalid text /by tomorrow
+deadline invalid date /by 2026-99-99
+deadline valid date /by 2026-08-26
+list
+bye
+```
+
+### Expected output
+
+```console-output
+========================================
+                 TASQUE                 
+========================================
+
+Hello! I'm Tasque.
+What can I do for you?
+OOPS!!! Please enter the date as yyyy-MM-dd.
+OOPS!!! Please enter the date as yyyy-MM-dd.
+Got it. I've added this task:
+[D][ ] valid date (by: Aug 26 2026)
+Now you have 1 tasks in the list
+Here are the tasks in your list:
+1.[D][ ] valid date (by: Aug 26 2026)
+
+Goodbye! See you again soon.
+```
+
 ## TC-L7-01: Persist tasks across restart
 
 **Aim:** Verify that Todo, Deadline, and Event tasks and their details are restored after restarting Tasque.
@@ -48,7 +152,7 @@ Goodbye! See you again soon.
 
 ```console-input
 todo read book
-deadline submit report /by 31 Dec
+deadline submit report /by 2026-08-26
 event team meeting /from Monday 2pm /to Monday 4pm
 bye
 --- RESTART ---
@@ -69,7 +173,7 @@ Got it. I've added this task:
 [T][ ] read book
 Now you have 1 tasks in the list
 Got it. I've added this task:
-[D][ ] submit report (by: 31 Dec)
+[D][ ] submit report (by: Aug 26 2026)
 Now you have 2 tasks in the list
 Got it. I've added this task:
 [E][ ] team meeting (from: Monday 2pm to: Monday 4pm)
@@ -84,7 +188,7 @@ Hello! I'm Tasque.
 What can I do for you?
 Here are the tasks in your list:
 1.[T][ ] read book
-2.[D][ ] submit report (by: 31 Dec)
+2.[D][ ] submit report (by: Aug 26 2026)
 3.[E][ ] team meeting (from: Monday 2pm to: Monday 4pm)
 
 Goodbye! See you again soon.
@@ -135,7 +239,7 @@ deadline
 deadline /by Sunday
 deadline return book
 deadline return book /by
-deadline return book /by Sunday
+deadline return book /by 2026-08-26
 list
 bye
 ```
@@ -154,10 +258,10 @@ OOPS!!! The description of a deadline cannot be empty.
 OOPS!!! A deadline must include /by followed by when it is due.
 OOPS!!! The /by value of a deadline cannot be empty.
 Got it. I've added this task:
-[D][ ] return book (by: Sunday)
+[D][ ] return book (by: Aug 26 2026)
 Now you have 1 tasks in the list
 Here are the tasks in your list:
-1.[D][ ] return book (by: Sunday)
+1.[D][ ] return book (by: Aug 26 2026)
 
 Goodbye! See you again soon.
 ```
@@ -295,7 +399,7 @@ Goodbye! See you again soon.
 ### Inputs
 
 ```console-input
-deadline return book /by Sunday
+deadline return book /by 2026-08-26
 list
 bye
 ```
@@ -310,10 +414,10 @@ bye
 Hello! I'm Tasque.
 What can I do for you?
 Got it. I've added this task:
-[D][ ] return book (by: Sunday)
+[D][ ] return book (by: Aug 26 2026)
 Now you have 1 tasks in the list
 Here are the tasks in your list:
-1.[D][ ] return book (by: Sunday)
+1.[D][ ] return book (by: Aug 26 2026)
 
 Goodbye! See you again soon.
 ```
@@ -356,7 +460,7 @@ Goodbye! See you again soon.
 
 ```console-input
 todo borrow book
-deadline return book /by Sunday
+deadline return book /by 2026-08-26
 event project meeting /from Mon 2pm /to 4pm
 mark 1
 mark 2
@@ -382,7 +486,7 @@ Got it. I've added this task:
 [T][ ] borrow book
 Now you have 1 tasks in the list
 Got it. I've added this task:
-[D][ ] return book (by: Sunday)
+[D][ ] return book (by: Aug 26 2026)
 Now you have 2 tasks in the list
 Got it. I've added this task:
 [E][ ] project meeting (from: Mon 2pm to: 4pm)
@@ -390,22 +494,22 @@ Now you have 3 tasks in the list
 Nice! I've marked this task as done:
 [T][X] borrow book
 Nice! I've marked this task as done:
-[D][X] return book (by: Sunday)
+[D][X] return book (by: Aug 26 2026)
 Nice! I've marked this task as done:
 [E][X] project meeting (from: Mon 2pm to: 4pm)
 Here are the tasks in your list:
 1.[T][X] borrow book
-2.[D][X] return book (by: Sunday)
+2.[D][X] return book (by: Aug 26 2026)
 3.[E][X] project meeting (from: Mon 2pm to: 4pm)
 OK, I've marked this task as not done yet:
 [T][ ] borrow book
 OK, I've marked this task as not done yet:
-[D][ ] return book (by: Sunday)
+[D][ ] return book (by: Aug 26 2026)
 OK, I've marked this task as not done yet:
 [E][ ] project meeting (from: Mon 2pm to: 4pm)
 Here are the tasks in your list:
 1.[T][ ] borrow book
-2.[D][ ] return book (by: Sunday)
+2.[D][ ] return book (by: Aug 26 2026)
 3.[E][ ] project meeting (from: Mon 2pm to: 4pm)
 
 Goodbye! See you again soon.
@@ -452,7 +556,7 @@ Goodbye! See you again soon.
 
 ```console-input
 todo first task
-deadline second task /by Sunday
+deadline second task /by 2026-08-26
 event third task /from Mon 2pm /to 4pm
 todo fourth task
 delete 1
@@ -478,7 +582,7 @@ Got it. I've added this task:
 [T][ ] first task
 Now you have 1 tasks in the list
 Got it. I've added this task:
-[D][ ] second task (by: Sunday)
+[D][ ] second task (by: Aug 26 2026)
 Now you have 2 tasks in the list
 Got it. I've added this task:
 [E][ ] third task (from: Mon 2pm to: 4pm)
@@ -490,21 +594,21 @@ Noted. I've removed this task:
 [T][ ] first task
 Now you have 3 tasks in the list
 Here are the tasks in your list:
-1.[D][ ] second task (by: Sunday)
+1.[D][ ] second task (by: Aug 26 2026)
 2.[E][ ] third task (from: Mon 2pm to: 4pm)
 3.[T][ ] fourth task
 Noted. I've removed this task:
 [E][ ] third task (from: Mon 2pm to: 4pm)
 Now you have 2 tasks in the list
 Here are the tasks in your list:
-1.[D][ ] second task (by: Sunday)
+1.[D][ ] second task (by: Aug 26 2026)
 2.[T][ ] fourth task
 Nice! I've marked this task as done:
 [T][X] fourth task
 OK, I've marked this task as not done yet:
 [T][ ] fourth task
 Here are the tasks in your list:
-1.[D][ ] second task (by: Sunday)
+1.[D][ ] second task (by: Aug 26 2026)
 2.[T][ ] fourth task
 
 Goodbye! See you again soon.
