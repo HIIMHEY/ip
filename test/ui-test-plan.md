@@ -40,6 +40,56 @@ OK, I've marked this task as not done yet:
 Goodbye! See you again soon.
 ```
 
+## TC-L7-01: Persist tasks across restart
+
+**Aim:** Verify that Todo, Deadline, and Event tasks and their details are restored after restarting Tasque.
+
+### Inputs
+
+```console-input
+todo read book
+deadline submit report /by 31 Dec
+event team meeting /from Monday 2pm /to Monday 4pm
+bye
+--- RESTART ---
+list
+bye
+```
+
+### Expected output
+
+```console-output
+========================================
+                 TASQUE                 
+========================================
+
+Hello! I'm Tasque.
+What can I do for you?
+Got it. I've added this task:
+[T][ ] read book
+Now you have 1 tasks in the list
+Got it. I've added this task:
+[D][ ] submit report (by: 31 Dec)
+Now you have 2 tasks in the list
+Got it. I've added this task:
+[E][ ] team meeting (from: Monday 2pm to: Monday 4pm)
+Now you have 3 tasks in the list
+
+Goodbye! See you again soon.
+========================================
+                 TASQUE                 
+========================================
+
+Hello! I'm Tasque.
+What can I do for you?
+Here are the tasks in your list:
+1.[T][ ] read book
+2.[D][ ] submit report (by: 31 Dec)
+3.[E][ ] team meeting (from: Monday 2pm to: Monday 4pm)
+
+Goodbye! See you again soon.
+```
+
 ## TC-L5-01: Reject empty Todo descriptions
 
 **Aim:** Reject missing or blank Todo descriptions without terminating Tasque or adding a task.
