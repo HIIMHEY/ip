@@ -4,6 +4,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.time.format.DateTimeParseException;
 
 public class Tasque {
     /**
@@ -140,12 +141,16 @@ public class Tasque {
                     if (by.isEmpty()) {
                         throw new TasqueException("The /by value of a deadline cannot be empty.");
                     }
-                    System.out.println("Got it. I've added this task:");
-                    Task task = new Deadline(description, by);
-                    tasks.add(task);
-                    System.out.println(task.toString());
-                    System.out.println("Now you have " + tasks.size() + " tasks in the list");
-                    saveTasks(tasks);
+                    try {
+                        Task task = new Deadline(description, by);
+                        tasks.add(task);
+                        System.out.println("Got it. I've added this task:");
+                        System.out.println(task.toString());
+                        System.out.println("Now you have " + tasks.size() + " tasks in the list");
+                        saveTasks(tasks);
+                    } catch (DateTimeParseException e) {
+                        throw new TasqueException("Please enter the date as yyyy-MM-dd.");
+                    }
                 } else if (userInput.equals("event") || userInput.startsWith("event ")) {
                     String eventDetails = userInput.substring("event".length()).trim();
                     if (eventDetails.isEmpty()) {
