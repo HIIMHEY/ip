@@ -25,6 +25,17 @@ public class Task {
         return this.description;
     }
 
+    /**
+     * Returns this task in its storage-file representation.
+     *
+     * @return Storage representation of this task.
+     */
+    public String toStorageString() {
+        return this.type.getSymbol() + " | "
+                               + (this.isDone ? "1" : "0") + " | "
+                               +  this.description;
+    }
+
     @Override
     public String toString() {
         return "[" + this.type.getSymbol() + "][" + this.getStatusIcon() + "] "
