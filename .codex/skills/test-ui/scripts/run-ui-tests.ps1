@@ -63,7 +63,7 @@ function Normalize-Output {
     param([string]$Text)
 
     $normalized = $Text.Replace("`r`n", "`n").Replace("`r", "`n")
-    return $normalized.TrimEnd([char[]]"`n")
+    return $normalized.Trim([char[]]"`n")
 }
 
 function Write-TextFile {
@@ -158,18 +158,39 @@ foreach ($caseMatch in $caseMatches) {
     $caseAim = $caseMatch.Groups["aim"].Value
     $caseInput = $caseMatch.Groups["input"].Value
     $expectedOutput = $caseMatch.Groups["expected"].Value
-    $processInput = (Normalize-Output $caseInput) + "`n"
-
     $caseDirectory = Join-Path $sessionDirectory $caseId
     [void](New-Item -ItemType Directory -Path $caseDirectory -Force)
 
     $runArguments = "-cp " + (Quote-Argument $classesDirectory) + " Tasque"
-    $runResult = Invoke-CapturedProcess `
-        -FileName "java" `
-        -Arguments $runArguments `
-        -WorkingDirectory $repoRoot `
-        -StandardInput $processInput `
-        -Timeout $TimeoutSeconds
+    $inputSegments = $caseInput -split '(?m)^\s*--- RESTART ---\s*$'
+    $stdoutSegments = New-Object System.Collections.Generic.List[string]
+    $stderrSegments = New-Object System.Collections.Generic.List[string]
+    $timedOut = $false
+    $exitCode = 0
+
+    foreach ($inputSegment in $inputSegments) {
+        $processInput = (Normalize-Output $inputSegment) + "`n"
+        $segmentResult = Invoke-CapturedProcess `
+            -FileName "java" `
+            -Arguments $runArguments `
+            -WorkingDirectory $caseDirectory `
+            -StandardInput $processInput `
+            -Timeout $TimeoutSeconds
+        $stdoutSegments.Add($segmentResult.Stdout)
+        $stderrSegments.Add($segmentResult.Stderr)
+        if ($segmentResult.TimedOut -or $segmentResult.ExitCode -ne 0) {
+            $timedOut = $segmentResult.TimedOut
+            $exitCode = $segmentResult.ExitCode
+            break
+        }
+    }
+
+    $runResult = [pscustomobject]@{
+        TimedOut = $timedOut
+        ExitCode = $exitCode
+        Stdout = $stdoutSegments -join "`n"
+        Stderr = $stderrSegments -join ""
+    }
 
     Write-TextFile (Join-Path $caseDirectory "input.txt") $caseInput
     Write-TextFile (Join-Path $caseDirectory "expected.txt") $expectedOutput

@@ -9,6 +9,11 @@ public class Event extends Task {
     }
 
     @Override
+    public String toStorageString() {
+        return super.toStorageString() + " | " + this.from + " | " + this.to;
+    }
+
+    @Override
     public String toString() {
         return super.toString() + " (from: " + this.from + " to: " + this.to + ")";
     }

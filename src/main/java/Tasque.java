@@ -1,10 +1,87 @@
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Tasque {
+    /**
+     * Saves the current tasks to the data file.
+     *
+     * @param tasks takes an ArrayList of tasks.
+     */
+    private static void saveTasks(ArrayList<Task> tasks) {
+        File dataDirectory = new File("data");
+        if (!dataDirectory.exists()) {
+            dataDirectory.mkdirs();
+        }
+        File tasqueFile = new File(dataDirectory, "tasque.txt");
+        try {
+            FileWriter taskWriter = new FileWriter(tasqueFile);
+            for (Task task : tasks) {
+                taskWriter.write(task.toStorageString());
+                taskWriter.write(System.lineSeparator());
+            }
+            taskWriter.close();
+        } catch (IOException e) {
+            System.out.println("OOPS!!! I couldn't save your tasks.");
+        }
+    }
+
+    /**
+     * Loads saved tasks from the data file.
+     *
+     * @return Saved tasks, or an empty list if no save file exists.
+     */
+    private static ArrayList<Task> loadTasks() {
+        File dataDirectory = new File("data");
+        if (!dataDirectory.exists()) {
+            dataDirectory.mkdirs();
+        }
+        File tasqueFile = new File(dataDirectory, "tasque.txt");
+        ArrayList<Task> tasks = new ArrayList<>();
+        try {
+            Scanner taskReader = new Scanner(tasqueFile);
+            while (taskReader.hasNextLine()) {
+                String storageString = taskReader.nextLine();
+                String[] parts = storageString.split("\\|");
+                if (parts[0].trim().equals("T")) {
+                    if (parts[1].trim().equals("1")) {
+                        Todo todo = new Todo(parts[2].trim());
+                        todo.markAsDone();
+                        tasks.add(todo);
+                    } else {
+                        tasks.add(new Todo(parts[2].trim()));
+                    }
+                } else if (parts[0].trim().equals("D")) {
+                    if (parts[1].trim().equals("1")) {
+                        Deadline deadline = new Deadline(parts[2].trim(), parts[3].trim());
+                        deadline.markAsDone();
+                        tasks.add(deadline);
+                    } else {
+                        tasks.add(new Deadline(parts[2].trim(), parts[3].trim()));
+                    }
+                } else if (parts[0].trim().equals("E")) {
+                    if (parts[1].trim().equals("1")) {
+                        Event event = new Event(parts[2].trim(), parts[3].trim(), parts[4].trim());
+                        event.markAsDone();
+                        tasks.add(event);
+                    } else {
+                        tasks.add(new Event(parts[2].trim(), parts[3].trim(), parts[4].trim()));
+                    }
+                }
+            }
+            taskReader.close();
+            return tasks;
+        } catch (FileNotFoundException e) {
+            return tasks;
+        }
+    }
+
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-        ArrayList<Task> tasks = new ArrayList<>();
+        ArrayList<Task> tasks = loadTasks();
         String banner = "========================================\n"
                 + "                 TASQUE                 \n"
                 + "========================================";
@@ -28,11 +105,13 @@ public class Tasque {
                     tasks.get(taskNumber - 1).markAsDone();
                     System.out.println("Nice! I've marked this task as done:");
                     System.out.println(tasks.get(taskNumber - 1).toString());
+                    saveTasks(tasks);
                 } else if (userInput.equals("unmark") || userInput.startsWith("unmark ")) {
                     int taskNumber = getTaskNumber(userInput, "unmark", tasks.size());
                     tasks.get(taskNumber - 1).markAsNotDone();
                     System.out.println("OK, I've marked this task as not done yet:");
                     System.out.println(tasks.get(taskNumber - 1).toString());
+                    saveTasks(tasks);
                 } else if (userInput.equals("todo") || userInput.startsWith("todo ")) {
                     String description = userInput.substring("todo".length()).trim();
                     if (description.isEmpty()) {
@@ -43,6 +122,7 @@ public class Tasque {
                     tasks.add(task);
                     System.out.println(task.toString());
                     System.out.println("Now you have " + tasks.size() + " tasks in the list");
+                    saveTasks(tasks);
                 } else if (userInput.equals("deadline") || userInput.startsWith("deadline ")) {
                     String deadlineDetails = userInput.substring("deadline".length()).trim();
                     if (deadlineDetails.isEmpty()) {
@@ -65,6 +145,7 @@ public class Tasque {
                     tasks.add(task);
                     System.out.println(task.toString());
                     System.out.println("Now you have " + tasks.size() + " tasks in the list");
+                    saveTasks(tasks);
                 } else if (userInput.equals("event") || userInput.startsWith("event ")) {
                     String eventDetails = userInput.substring("event".length()).trim();
                     if (eventDetails.isEmpty()) {
@@ -98,6 +179,7 @@ public class Tasque {
                     tasks.add(task);
                     System.out.println(task.toString());
                     System.out.println("Now you have " + tasks.size() + " tasks in the list");
+                    saveTasks(tasks);
                 } else if (userInput.equals("delete") || userInput.startsWith("delete ")) {
                     int taskNumber = getTaskNumber(userInput, "delete", tasks.size());
                     int taskIndex = taskNumber - 1;
@@ -105,6 +187,7 @@ public class Tasque {
                     System.out.println("Noted. I've removed this task:");
                     System.out.println(deletedTask.toString());
                     System.out.println("Now you have " + tasks.size() + " tasks in the list");
+                    saveTasks(tasks);
                 } else {
                     throw new TasqueException("I do not recognize that command.");
                 }
