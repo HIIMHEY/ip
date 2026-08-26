@@ -122,7 +122,7 @@ if ($caseMatches.Count -ne $declaredCases.Count) {
 }
 
 $sourceDirectory = Join-Path $repoRoot "src\main\java"
-$sourceFiles = @(Get-ChildItem -LiteralPath $sourceDirectory -Filter "*.java" -File | Sort-Object Name)
+$sourceFiles = @(Get-ChildItem -LiteralPath $sourceDirectory -Filter "*.java" -File -Recurse | Sort-Object FullName)
 if ($sourceFiles.Count -eq 0) {
     Write-Error "No Java source files found in $sourceDirectory"
     exit 1
@@ -161,7 +161,7 @@ foreach ($caseMatch in $caseMatches) {
     $caseDirectory = Join-Path $sessionDirectory $caseId
     [void](New-Item -ItemType Directory -Path $caseDirectory -Force)
 
-    $runArguments = "-cp " + (Quote-Argument $classesDirectory) + " Tasque"
+    $runArguments = "-cp " + (Quote-Argument $classesDirectory) + " tasque.Tasque"
     $inputSegments = $caseInput -split '(?m)^\s*--- RESTART ---\s*$'
     $stdoutSegments = New-Object System.Collections.Generic.List[string]
     $stderrSegments = New-Object System.Collections.Generic.List[string]

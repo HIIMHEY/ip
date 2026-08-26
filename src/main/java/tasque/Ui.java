@@ -1,5 +1,9 @@
+package tasque;
+
 import java.util.List;
 import java.util.Scanner;
+
+import tasque.task.Task;
 
 public class Ui {
     private final Scanner scanner;

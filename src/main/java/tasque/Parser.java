@@ -1,4 +1,11 @@
+package tasque;
+
 import java.time.format.DateTimeParseException;
+
+import tasque.task.Deadline;
+import tasque.task.Event;
+import tasque.task.Task;
+import tasque.task.Todo;
 
 public class Parser {
     public String parseCommand(String userInput) throws TasqueException {

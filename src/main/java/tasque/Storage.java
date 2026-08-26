@@ -1,3 +1,5 @@
+package tasque;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
@@ -5,6 +7,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+
+import tasque.task.Deadline;
+import tasque.task.Event;
+import tasque.task.Task;
+import tasque.task.Todo;
 
 public class Storage {
     private final String filePath;

@@ -1,3 +1,8 @@
+package tasque;
+
+import tasque.task.Task;
+import tasque.task.TaskList;
+
 public class Tasque {
     private final Parser parser;
     private final Storage storage;
