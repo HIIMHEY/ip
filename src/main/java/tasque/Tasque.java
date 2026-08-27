@@ -1,5 +1,7 @@
 package tasque;
 
+import java.util.List;
+
 import tasque.task.Task;
 import tasque.task.TaskList;
 
@@ -59,6 +61,9 @@ public class Tasque {
                     case "delete":
                         deleteTask(userInput);
                         break;
+                    case "find":
+                        findTask(userInput);
+                        break;
                     default:
                         throw new TasqueException("I do not recognize that command.");
                 }
@@ -101,6 +106,12 @@ public class Tasque {
 
     private void saveTasks() throws TasqueException {
         this.storage.saveTasks(this.tasks.getTasks());
+    }
+
+    private void findTask(String userInput) throws TasqueException {
+        String keyword = this.parser.parseFindKeyword(userInput);
+        List<Task> matchingTasks = this.tasks.findTasks(keyword);
+        this.ui.showMatchingTasks(matchingTasks);
     }
 
     /**

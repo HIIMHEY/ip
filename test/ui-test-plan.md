@@ -4,6 +4,108 @@ This file records persistent console regression tests. Expected-output blocks
 contain Tasque process stdout only; input echo is shown separately by the test
 runner.
 
+## TC-L9-01: Find matching tasks
+
+**Aim:** Find all tasks whose descriptions contain a keyword and number only the matching results.
+
+### Inputs
+
+```console-input
+todo read book
+deadline return book /by 2026-08-26
+todo submit report
+find book
+bye
+```
+
+### Expected output
+
+```console-output
+========================================
+                 TASQUE                 
+========================================
+
+Hello! I'm Tasque.
+What can I do for you?
+Got it. I've added this task:
+[T][ ] read book
+Now you have 1 tasks in the list
+Got it. I've added this task:
+[D][ ] return book (by: Aug 26 2026)
+Now you have 2 tasks in the list
+Got it. I've added this task:
+[T][ ] submit report
+Now you have 3 tasks in the list
+Here are the matching tasks in your list:
+1.[T][ ] read book
+2.[D][ ] return book (by: Aug 26 2026)
+
+Goodbye! See you again soon.
+```
+
+## TC-L9-02: Find with no matches
+
+**Aim:** Show an empty matching-task list without treating a no-match search as an error.
+
+### Inputs
+
+```console-input
+todo read book
+find report
+bye
+```
+
+### Expected output
+
+```console-output
+========================================
+                 TASQUE                 
+========================================
+
+Hello! I'm Tasque.
+What can I do for you?
+Got it. I've added this task:
+[T][ ] read book
+Now you have 1 tasks in the list
+Here are the matching tasks in your list:
+
+Goodbye! See you again soon.
+```
+
+## TC-L9-03: Reject blank find keyword
+
+**Aim:** Reject missing or blank Find keywords while keeping Tasque running.
+
+### Inputs
+
+```console-input
+find
+find   
+todo read book
+find book
+bye
+```
+
+### Expected output
+
+```console-output
+========================================
+                 TASQUE                 
+========================================
+
+Hello! I'm Tasque.
+What can I do for you?
+OOPS!!! The find command needs a keyword.
+OOPS!!! The find command needs a keyword.
+Got it. I've added this task:
+[T][ ] read book
+Now you have 1 tasks in the list
+Here are the matching tasks in your list:
+1.[T][ ] read book
+
+Goodbye! See you again soon.
+```
+
 ## TC-L3-01: Add, list, mark, and unmark a task
 
 **Aim:** Preserve the completed Level-0 to Level-3 console workflow.

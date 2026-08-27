@@ -77,6 +77,22 @@ public class TaskList {
     }
 
     /**
+     * Returns tasks whose descriptions contain the specified keyword.
+     *
+     * @param keyword Keyword to search for in task descriptions.
+     * @return Matching tasks in their existing list order.
+     */
+    public List<Task> findTasks(String keyword) {
+        List<Task> matchingTasks = new ArrayList<>();
+        for (Task task : this.tasks) {
+            if (task.getDescription().contains(keyword)) {
+                matchingTasks.add(task);
+            }
+        }
+        return matchingTasks;
+    }
+
+    /**
      * Returns the number of tasks in the list.
      *
      * @return Current number of tasks.

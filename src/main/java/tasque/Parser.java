@@ -24,7 +24,7 @@ public class Parser {
         }
 
         String[] commandsWithArguments = {
-            "mark", "unmark", "todo", "deadline", "event", "delete"
+            "mark", "unmark", "todo", "deadline", "event", "delete", "find"
         };
         for (String command : commandsWithArguments) {
             if (userInput.equals(command) || userInput.startsWith(command + " ")) {
@@ -65,6 +65,21 @@ public class Parser {
             throw new TasqueException("Task " + taskNumber + " does not exist in the list.");
         }
         return taskNumber;
+    }
+
+    /**
+     * Extracts the keyword supplied to a Find command.
+     *
+     * @param userInput Full user input for the Find command.
+     * @return The non-blank search keyword.
+     * @throws TasqueException If the Find command has no keyword.
+     */
+    public String parseFindKeyword(String userInput) throws TasqueException {
+        String keyword = userInput.substring("find".length()).trim();
+        if (keyword.isEmpty()) {
+            throw new TasqueException("The find command needs a keyword.");
+        }
+        return keyword;
     }
 
     /**
