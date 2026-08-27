@@ -365,6 +365,8 @@ Unless explicitly asked:
 
 Use lightweight tags unless the user requests an annotated tag.
 
+For Git branch naming and commit-message work, invoke and follow the project-local `seedu-git-standard` skill. Exact current course-required names and workflows take precedence over generic conventions.
+
 When proposing a commit message, include enough information to explain the purpose of the change.
 
 When a course increment appears complete, report that it is ready for the required commit/tag workflow, but do not perform that workflow unless the user asks.
