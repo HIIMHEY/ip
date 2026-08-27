@@ -7,7 +7,17 @@ import tasque.task.Event;
 import tasque.task.Task;
 import tasque.task.Todo;
 
+/**
+ * Parses user input into validated commands and task objects.
+ */
 public class Parser {
+    /**
+     * Parses the command keyword from the user's input.
+     *
+     * @param userInput User input to classify.
+     * @return Recognized command keyword.
+     * @throws TasqueException If the input does not begin with a supported command.
+     */
     public String parseCommand(String userInput) throws TasqueException {
         if (userInput.equals("bye") || userInput.equals("list")) {
             return userInput;
@@ -25,6 +35,15 @@ public class Parser {
         throw new TasqueException("I do not recognize that command.");
     }
 
+    /**
+     * Parses and validates a one-based task number from a command.
+     *
+     * @param userInput User input containing the task number.
+     * @param command Command whose task number is being parsed.
+     * @param numberOfTasks Number of tasks currently available.
+     * @return The validated one-based task number.
+     * @throws TasqueException If the task number is missing, invalid, or out of range.
+     */
     public int parseTaskNumber(String userInput, String command, int numberOfTasks)
             throws TasqueException {
         String taskNumberText = userInput.substring(command.length()).trim();
@@ -48,6 +67,13 @@ public class Parser {
         return taskNumber;
     }
 
+    /**
+     * Parses a todo task from a {@code todo} command.
+     *
+     * @param userInput User input containing the todo description.
+     * @return Parsed todo task.
+     * @throws TasqueException If the todo description is empty.
+     */
     public Task parseTodo(String userInput) throws TasqueException {
         String description = userInput.substring("todo".length()).trim();
         if (description.isEmpty()) {
@@ -56,6 +82,13 @@ public class Parser {
         return new Todo(description);
     }
 
+    /**
+     * Parses a deadline task from a {@code deadline} command.
+     *
+     * @param userInput User input containing the description and due date.
+     * @return Parsed deadline task.
+     * @throws TasqueException If the command is incomplete or the date is invalid.
+     */
     public Task parseDeadline(String userInput) throws TasqueException {
         String deadlineDetails = userInput.substring("deadline".length()).trim();
         if (deadlineDetails.isEmpty()) {
@@ -84,6 +117,13 @@ public class Parser {
         }
     }
 
+    /**
+     * Parses an event task from an {@code event} command.
+     *
+     * @param userInput User input containing the description and time range.
+     * @return Parsed event task.
+     * @throws TasqueException If the command is incomplete.
+     */
     public Task parseEvent(String userInput) throws TasqueException {
         String eventDetails = userInput.substring("event".length()).trim();
         if (eventDetails.isEmpty()) {

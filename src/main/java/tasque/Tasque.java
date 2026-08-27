@@ -3,12 +3,20 @@ package tasque;
 import tasque.task.Task;
 import tasque.task.TaskList;
 
+/**
+ * Coordinates the user interface, command parsing, task list, and storage.
+ */
 public class Tasque {
     private final Parser parser;
     private final Storage storage;
     private final TaskList tasks;
     private final Ui ui;
 
+    /**
+     * Creates a Tasque session using the specified task data file.
+     *
+     * @param filePath Path of the task data file.
+     */
     public Tasque(String filePath) {
         this.parser = new Parser();
         this.storage = new Storage(filePath);
@@ -16,6 +24,9 @@ public class Tasque {
         this.ui = new Ui();
     }
 
+    /**
+     * Runs the command loop until the user enters {@code bye}.
+     */
     public void run() {
         this.ui.showWelcome();
         boolean isExit = false;
@@ -92,6 +103,11 @@ public class Tasque {
         this.storage.saveTasks(this.tasks.getTasks());
     }
 
+    /**
+     * Starts Tasque with its default relative data-file path.
+     *
+     * @param args Command-line arguments, which are not used.
+     */
     public static void main(String[] args) {
         new Tasque("data/tasque.txt").run();
     }

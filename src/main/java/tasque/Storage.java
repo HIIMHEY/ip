@@ -13,9 +13,17 @@ import tasque.task.Event;
 import tasque.task.Task;
 import tasque.task.Todo;
 
+/**
+ * Loads and saves Tasque tasks using the application's storage format.
+ */
 public class Storage {
     private final String filePath;
 
+    /**
+     * Creates a storage handler backed by the specified file path.
+     *
+     * @param filePath Path of the task data file.
+     */
     public Storage(String filePath) {
         this.filePath = filePath;
     }
