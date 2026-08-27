@@ -59,8 +59,8 @@ public class Task {
      */
     public String toStorageString() {
         return this.type.getSymbol() + " | "
-                               + (this.isDone ? "1" : "0") + " | "
-                               +  this.description;
+                + (this.isDone ? "1" : "0") + " | "
+                + this.description;
     }
 
     /**

@@ -15,13 +15,13 @@ public class ParserTest {
     @Test
     public void parseTaskNumber_nonNumericTaskNumber_throwsTasqueException() {
         Parser parser = new Parser();
-        assertThrows(TasqueException.class, () -> {parser.parseTaskNumber("delete abc", "delete", 5);});
+        assertThrows(TasqueException.class, () -> parser.parseTaskNumber("delete abc", "delete", 5));
     }
 
     @Test
     public void parseTaskNumber_negativeTaskNumber_throwsTasqueException() {
         Parser parser = new Parser();
-        assertThrows(TasqueException.class, () -> {parser.parseTaskNumber("delete -1", "delete", 5);});
+        assertThrows(TasqueException.class, () -> parser.parseTaskNumber("delete -1", "delete", 5));
     }
 
     @Test
