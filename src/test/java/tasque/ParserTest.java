@@ -54,4 +54,19 @@ public class ParserTest {
         int actual = parser.parseTaskNumber("delete 5", "delete", 5);
         assertEquals(5, actual);
     }
+
+    @Test
+    public void parseFindKeyword_keywordProvided_returnsKeyword() throws TasqueException {
+        Parser parser = new Parser();
+        String actual = parser.parseFindKeyword("find book");
+        assertEquals("book", actual);
+    }
+
+    @Test
+    public void parseFindKeyword_missingKeyword_throwsTasqueException() {
+        Parser parser = new Parser();
+        TasqueException exception = assertThrows(TasqueException.class,
+                () -> parser.parseFindKeyword("find   "));
+        assertEquals("The find command needs a keyword.", exception.getMessage());
+    }
 }

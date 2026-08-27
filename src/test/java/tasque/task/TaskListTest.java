@@ -2,6 +2,9 @@ package tasque.task;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
+
+import java.util.List;
+
 import org.junit.jupiter.api.Test;
 
 public class TaskListTest {
@@ -39,5 +42,43 @@ public class TaskListTest {
 
         assertSame(task, markedTask);
         assertEquals("X", task.getStatusIcon());
+    }
+
+    @Test
+    public void findTasks_keywordMatchesOneTask_returnsMatchingTask() {
+        TaskList tasks = new TaskList();
+        Task matchingTask = new Todo("read book");
+        tasks.add(matchingTask);
+        tasks.add(new Todo("submit report"));
+
+        List<Task> matches = tasks.findTasks("book");
+
+        assertEquals(List.of(matchingTask), matches);
+    }
+
+    @Test
+    public void findTasks_keywordMatchesMultipleTasks_returnsAllMatchesInListOrder() {
+        TaskList tasks = new TaskList();
+        Task firstMatchingTask = new Todo("read book");
+        Task secondMatchingTask = new Todo("return book");
+        tasks.add(firstMatchingTask);
+        tasks.add(new Todo("submit report"));
+        tasks.add(secondMatchingTask);
+
+        List<Task> matches = tasks.findTasks("book");
+
+        assertEquals(List.of(firstMatchingTask, secondMatchingTask), matches);
+    }
+
+    @Test
+    public void findTasks_noMatchingTask_returnsEmptyListWithoutChangingTaskList() {
+        TaskList tasks = new TaskList();
+        Task task = new Todo("read book");
+        tasks.add(task);
+
+        List<Task> matches = tasks.findTasks("report");
+
+        assertEquals(List.of(), matches);
+        assertEquals(List.of(task), tasks.getTasks());
     }
 }
