@@ -323,6 +323,7 @@ If reviewing an increment implemented by the user:
 * Do not over-comment straightforward code.
 * Do not introduce advanced architecture merely to make the implementation appear more sophisticated.
 * Do not add new production dependencies unless required by the specification or explicitly approved by the user.
+* For Java implementation, refactoring, review, or coding-standard checks, invoke and follow the project-local `seedu-java-coding-standard` skill.
 * When checking the SE-EDU Java coding standard, apply only rules relevant to the current increment and preserve grading-sensitive project choices such as an intentional default package.
 
 # Java and development environment
