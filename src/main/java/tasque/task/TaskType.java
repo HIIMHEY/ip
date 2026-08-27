@@ -1,5 +1,8 @@
 package tasque.task;
 
+/**
+ * Identifies the supported types of tasks.
+ */
 public enum TaskType {
     TODO("T"),
     DEADLINE("D"),

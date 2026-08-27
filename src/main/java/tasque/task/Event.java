@@ -1,5 +1,8 @@
 package tasque.task;
 
+/**
+ * Represents a task that occurs over a specified period.
+ */
 public class Event extends Task {
     protected String from;
     protected String to;

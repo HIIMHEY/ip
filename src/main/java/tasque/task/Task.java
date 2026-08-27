@@ -1,5 +1,8 @@
 package tasque.task;
 
+/**
+ * Represents a task tracked by Tasque.
+ */
 public class Task {
     protected String description;
     protected boolean isDone;
@@ -11,10 +14,16 @@ public class Task {
         this.type = type;
     }
 
+    /**
+     * Marks this task as done.
+     */
     public void markAsDone() {
         this.isDone = true;
     }
 
+    /**
+     * Marks this task as not done.
+     */
     public void markAsNotDone() {
         this.isDone = false;
     }
@@ -34,8 +43,8 @@ public class Task {
      */
     public String toStorageString() {
         return this.type.getSymbol() + " | "
-                               + (this.isDone ? "1" : "0") + " | "
-                               +  this.description;
+                + (this.isDone ? "1" : "0") + " | "
+                + this.description;
     }
 
     @Override

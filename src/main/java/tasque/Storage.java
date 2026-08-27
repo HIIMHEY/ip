@@ -13,6 +13,9 @@ import tasque.task.Event;
 import tasque.task.Task;
 import tasque.task.Todo;
 
+/**
+ * Loads and saves Tasque tasks in a data file.
+ */
 public class Storage {
     private final String filePath;
 

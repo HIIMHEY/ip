@@ -3,6 +3,9 @@ package tasque.task;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
+/**
+ * Represents a task that must be completed by a specific date.
+ */
 public class Deadline extends Task {
     protected LocalDate by;
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM d yyyy");

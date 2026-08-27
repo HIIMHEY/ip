@@ -3,6 +3,9 @@ package tasque;
 import tasque.task.Task;
 import tasque.task.TaskList;
 
+/**
+ * Runs the Tasque task manager.
+ */
 public class Tasque {
     private final Parser parser;
     private final Storage storage;
@@ -16,40 +19,43 @@ public class Tasque {
         this.ui = new Ui();
     }
 
+    /**
+     * Runs the command loop until the user exits.
+     */
     public void run() {
         this.ui.showWelcome();
-        boolean isExit = false;
-        while (!isExit) {
+        boolean shouldExit = false;
+        while (!shouldExit) {
             String userInput = this.ui.readCommand();
             try {
                 String command = this.parser.parseCommand(userInput);
                 switch (command) {
-                case "bye":
-                    isExit = true;
-                    break;
-                case "list":
-                    this.ui.showTaskList(this.tasks.getTasks());
-                    break;
-                case "mark":
-                    markTask(userInput);
-                    break;
-                case "unmark":
-                    unmarkTask(userInput);
-                    break;
-                case "todo":
-                    addTask(this.parser.parseTodo(userInput));
-                    break;
-                case "deadline":
-                    addTask(this.parser.parseDeadline(userInput));
-                    break;
-                case "event":
-                    addTask(this.parser.parseEvent(userInput));
-                    break;
-                case "delete":
-                    deleteTask(userInput);
-                    break;
-                default:
-                    throw new TasqueException("I do not recognize that command.");
+                    case "bye":
+                        shouldExit = true;
+                        break;
+                    case "list":
+                        this.ui.showTaskList(this.tasks.getTasks());
+                        break;
+                    case "mark":
+                        markTask(userInput);
+                        break;
+                    case "unmark":
+                        unmarkTask(userInput);
+                        break;
+                    case "todo":
+                        addTask(this.parser.parseTodo(userInput));
+                        break;
+                    case "deadline":
+                        addTask(this.parser.parseDeadline(userInput));
+                        break;
+                    case "event":
+                        addTask(this.parser.parseEvent(userInput));
+                        break;
+                    case "delete":
+                        deleteTask(userInput);
+                        break;
+                    default:
+                        throw new TasqueException("I do not recognize that command.");
                 }
             } catch (TasqueException e) {
                 this.ui.showError(e.getMessage());
@@ -60,21 +66,21 @@ public class Tasque {
 
     private void addTask(Task task) throws TasqueException {
         this.tasks.add(task);
-        this.ui.showTaskAdded(task, this.tasks.size());
+        this.ui.showTaskAdded(task, this.tasks.getSize());
         saveTasks();
     }
 
     private void deleteTask(String userInput) throws TasqueException {
         int taskNumber = this.parser.parseTaskNumber(
-                userInput, "delete", this.tasks.size());
+                userInput, "delete", this.tasks.getSize());
         Task deletedTask = this.tasks.delete(taskNumber);
-        this.ui.showTaskDeleted(deletedTask, this.tasks.size());
+        this.ui.showTaskDeleted(deletedTask, this.tasks.getSize());
         saveTasks();
     }
 
     private void markTask(String userInput) throws TasqueException {
         int taskNumber = this.parser.parseTaskNumber(
-                userInput, "mark", this.tasks.size());
+                userInput, "mark", this.tasks.getSize());
         Task markedTask = this.tasks.markAsDone(taskNumber);
         this.ui.showTaskMarked(markedTask);
         saveTasks();
@@ -82,7 +88,7 @@ public class Tasque {
 
     private void unmarkTask(String userInput) throws TasqueException {
         int taskNumber = this.parser.parseTaskNumber(
-                userInput, "unmark", this.tasks.size());
+                userInput, "unmark", this.tasks.getSize());
         Task unmarkedTask = this.tasks.markAsNotDone(taskNumber);
         this.ui.showTaskUnmarked(unmarkedTask);
         saveTasks();
@@ -92,6 +98,11 @@ public class Tasque {
         this.storage.saveTasks(this.tasks.getTasks());
     }
 
+    /**
+     * Starts Tasque using the default data-file path.
+     *
+     * @param args Command-line arguments; ignored.
+     */
     public static void main(String[] args) {
         new Tasque("data/tasque.txt").run();
     }
