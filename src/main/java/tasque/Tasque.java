@@ -76,36 +76,66 @@ public class Tasque {
 
     private void addTask(Task task) throws TasqueException {
         this.tasks.add(task);
+        try {
+            saveTasks();
+        } catch (TasqueException e) {
+            this.tasks.delete(this.tasks.getSize());
+            throw e;
+        }
         this.ui.showTaskAdded(task, this.tasks.getSize());
-        saveTasks();
     }
 
     private void deleteTask(String userInput) throws TasqueException {
         int taskNumber = this.parser.parseTaskNumber(
                 userInput, "delete", this.tasks.getSize());
         Task deletedTask = this.tasks.delete(taskNumber);
+        try {
+            saveTasks();
+        } catch (TasqueException e) {
+            this.tasks.add(taskNumber, deletedTask);
+            throw e;
+        }
         this.ui.showTaskDeleted(deletedTask, this.tasks.getSize());
-        saveTasks();
     }
 
     private void markTask(String userInput) throws TasqueException {
         int taskNumber = this.parser.parseTaskNumber(
                 userInput, "mark", this.tasks.getSize());
+        boolean wasDone = this.tasks.getTasks().get(taskNumber - 1).isDone();
         Task markedTask = this.tasks.markAsDone(taskNumber);
+        try {
+            saveTasks();
+        } catch (TasqueException e) {
+            restoreCompletion(markedTask, wasDone);
+            throw e;
+        }
         this.ui.showTaskMarked(markedTask);
-        saveTasks();
     }
 
     private void unmarkTask(String userInput) throws TasqueException {
         int taskNumber = this.parser.parseTaskNumber(
                 userInput, "unmark", this.tasks.getSize());
+        boolean wasDone = this.tasks.getTasks().get(taskNumber - 1).isDone();
         Task unmarkedTask = this.tasks.markAsNotDone(taskNumber);
+        try {
+            saveTasks();
+        } catch (TasqueException e) {
+            restoreCompletion(unmarkedTask, wasDone);
+            throw e;
+        }
         this.ui.showTaskUnmarked(unmarkedTask);
-        saveTasks();
     }
 
     private void saveTasks() throws TasqueException {
         this.storage.saveTasks(this.tasks.getTasks());
+    }
+
+    private void restoreCompletion(Task task, boolean wasDone) {
+        if (wasDone) {
+            task.markAsDone();
+        } else {
+            task.markAsNotDone();
+        }
     }
 
     private void findTask(String userInput) throws TasqueException {

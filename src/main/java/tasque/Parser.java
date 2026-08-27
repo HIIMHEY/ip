@@ -137,7 +137,7 @@ public class Parser {
      *
      * @param userInput User input containing the description and time range.
      * @return Parsed event task.
-     * @throws TasqueException If the command is incomplete.
+     * @throws TasqueException If the command is incomplete or either date is invalid.
      */
     public Task parseEvent(String userInput) throws TasqueException {
         String eventDetails = userInput.substring("event".length()).trim();
@@ -173,6 +173,10 @@ public class Parser {
             throw new TasqueException("The /to value of an event cannot be empty.");
         }
 
-        return new Event(description, from, to);
+        try {
+            return new Event(description, from, to);
+        } catch (DateTimeParseException e) {
+            throw new TasqueException("Please enter the dates as yyyy-MM-dd.");
+        }
     }
 }

@@ -69,4 +69,24 @@ public class ParserTest {
                 () -> parser.parseFindKeyword("find   "));
         assertEquals("The find command needs a keyword.", exception.getMessage());
     }
+
+    @Test
+    public void parseEvent_validIsoDates_returnsEventWithFormattedDates() throws TasqueException {
+        Parser parser = new Parser();
+
+        String actual = parser.parseEvent(
+                "event project meeting /from 2026-08-28 /to 2026-08-29").toString();
+
+        assertEquals("[E][ ] project meeting (from: Aug 28 2026 to: Aug 29 2026)", actual);
+    }
+
+    @Test
+    public void parseEvent_invalidDate_throwsTasqueException() {
+        Parser parser = new Parser();
+
+        TasqueException exception = assertThrows(TasqueException.class,
+                () -> parser.parseEvent("event project meeting /from tomorrow /to 2026-08-29"));
+
+        assertEquals("Please enter the dates as yyyy-MM-dd.", exception.getMessage());
+    }
 }

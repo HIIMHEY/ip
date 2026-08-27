@@ -1,10 +1,16 @@
 package tasque;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.AtomicMoveNotSupportedException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 import java.util.Scanner;
 
@@ -35,18 +41,39 @@ public class Storage {
      * @throws TasqueException If the tasks cannot be saved.
      */
     public void saveTasks(List<Task> tasks) throws TasqueException {
-        File tasqueFile = new File(this.filePath);
-        File parentDirectory = tasqueFile.getParentFile();
-        if (parentDirectory != null && !parentDirectory.exists()) {
-            parentDirectory.mkdirs();
-        }
-        try (FileWriter taskWriter = new FileWriter(tasqueFile)) {
-            for (Task task : tasks) {
-                taskWriter.write(task.toStorageString());
-                taskWriter.write(System.lineSeparator());
+        Path tasquePath = Path.of(this.filePath).toAbsolutePath();
+        Path parentDirectory = tasquePath.getParent();
+        Path temporaryPath = null;
+        try {
+            Files.createDirectories(parentDirectory);
+            temporaryPath = Files.createTempFile(parentDirectory, ".tasque-", ".tmp");
+            try (BufferedWriter taskWriter = Files.newBufferedWriter(
+                    temporaryPath, StandardCharsets.UTF_8)) {
+                for (Task task : tasks) {
+                    taskWriter.write(task.toStorageString());
+                    taskWriter.write(System.lineSeparator());
+                }
             }
+            replaceStorageFile(temporaryPath, tasquePath);
         } catch (IOException e) {
             throw new TasqueException("I couldn't save your tasks.");
+        } finally {
+            if (temporaryPath != null) {
+                try {
+                    Files.deleteIfExists(temporaryPath);
+                } catch (IOException e) {
+                    // The save result is known; leave cleanup to the operating system.
+                }
+            }
+        }
+    }
+
+    private void replaceStorageFile(Path temporaryPath, Path tasquePath) throws IOException {
+        try {
+            Files.move(temporaryPath, tasquePath,
+                    StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING);
+        } catch (AtomicMoveNotSupportedException e) {
+            Files.move(temporaryPath, tasquePath, StandardCopyOption.REPLACE_EXISTING);
         }
     }
 
@@ -58,7 +85,7 @@ public class Storage {
     public List<Task> loadTasks() {
         File tasqueFile = new File(this.filePath);
         ArrayList<Task> tasks = new ArrayList<>();
-        try (Scanner taskReader = new Scanner(tasqueFile)) {
+        try (Scanner taskReader = new Scanner(tasqueFile, StandardCharsets.UTF_8.name())) {
             while (taskReader.hasNextLine()) {
                 Task task = parseStoredTask(taskReader.nextLine());
                 if (task != null) {
@@ -72,16 +99,23 @@ public class Storage {
     }
 
     private Task parseStoredTask(String storageString) {
-        String[] parts = storageString.split("\\|");
+        String[] parts = storageString.split("\\|", -1);
         String taskType = parts[0].trim();
+        boolean hasEncodedDescription = taskType.endsWith("2");
+        if (hasEncodedDescription) {
+            taskType = taskType.substring(0, taskType.length() - 1);
+        }
+        String description = hasEncodedDescription
+                ? decodeDescription(parts[2].trim())
+                : parts[2].trim();
         Task task;
 
         if (taskType.equals("T")) {
-            task = new Todo(parts[2].trim());
+            task = new Todo(description);
         } else if (taskType.equals("D")) {
-            task = new Deadline(parts[2].trim(), parts[3].trim());
+            task = new Deadline(description, parts[3].trim());
         } else if (taskType.equals("E")) {
-            task = new Event(parts[2].trim(), parts[3].trim(), parts[4].trim());
+            task = Event.fromStoredValues(description, parts[3].trim(), parts[4].trim());
         } else {
             return null;
         }
@@ -90,5 +124,10 @@ public class Storage {
             task.markAsDone();
         }
         return task;
+    }
+
+    private String decodeDescription(String encodedDescription) {
+        byte[] descriptionBytes = Base64.getDecoder().decode(encodedDescription);
+        return new String(descriptionBytes, StandardCharsets.UTF_8);
     }
 }

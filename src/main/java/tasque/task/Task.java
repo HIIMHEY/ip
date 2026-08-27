@@ -1,5 +1,8 @@
 package tasque.task;
 
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
+
 /**
  * Represents a task with a description, type, and completion state.
  */
@@ -53,14 +56,25 @@ public class Task {
     }
 
     /**
+     * Returns whether this task is completed.
+     *
+     * @return {@code true} if this task is completed.
+     */
+    public boolean isDone() {
+        return this.isDone;
+    }
+
+    /**
      * Returns this task in its storage-file representation.
      *
      * @return Storage representation of this task.
      */
     public String toStorageString() {
-        return this.type.getSymbol() + " | "
+        String encodedDescription = Base64.getEncoder().encodeToString(
+                this.description.getBytes(StandardCharsets.UTF_8));
+        return this.type.getSymbol() + "2 | "
                 + (this.isDone ? "1" : "0") + " | "
-                + this.description;
+                + encodedDescription;
     }
 
     /**

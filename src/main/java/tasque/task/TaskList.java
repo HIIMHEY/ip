@@ -36,6 +36,16 @@ public class TaskList {
     }
 
     /**
+     * Inserts a task at a one-based list position.
+     *
+     * @param taskNumber One-based position at which to insert the task.
+     * @param task Task to insert.
+     */
+    public void add(int taskNumber, Task task) {
+        this.tasks.add(taskNumber - 1, task);
+    }
+
+    /**
      * Removes and returns the task at a one-based list position.
      *
      * @param taskNumber One-based position of the task to remove.

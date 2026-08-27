@@ -246,6 +246,50 @@ Here are the tasks in your list:
 Goodbye! See you again soon.
 ```
 
+## TC-L8-04: Parse, validate, and persist event dates
+
+**Aim:** Reject invalid Event dates, format valid ISO dates, and restore them after restarting Tasque.
+
+### Inputs
+
+```console-input
+event invalid text /from tomorrow /to 2026-08-29
+event invalid date /from 2026-99-99 /to 2026-08-29
+event project meeting /from 2026-08-28 /to 2026-08-29
+bye
+--- RESTART ---
+list
+bye
+```
+
+### Expected output
+
+```console-output
+========================================
+                 TASQUE                 
+========================================
+
+Hello! I'm Tasque.
+What can I do for you?
+OOPS!!! Please enter the dates as yyyy-MM-dd.
+OOPS!!! Please enter the dates as yyyy-MM-dd.
+Got it. I've added this task:
+[E][ ] project meeting (from: Aug 28 2026 to: Aug 29 2026)
+Now you have 1 tasks in the list
+
+Goodbye! See you again soon.
+========================================
+                 TASQUE                 
+========================================
+
+Hello! I'm Tasque.
+What can I do for you?
+Here are the tasks in your list:
+1.[E][ ] project meeting (from: Aug 28 2026 to: Aug 29 2026)
+
+Goodbye! See you again soon.
+```
+
 ## TC-L7-01: Persist tasks across restart
 
 **Aim:** Verify that Todo, Deadline, and Event tasks and their details are restored after restarting Tasque.
@@ -255,7 +299,7 @@ Goodbye! See you again soon.
 ```console-input
 todo read book
 deadline submit report /by 2026-08-26
-event team meeting /from Monday 2pm /to Monday 4pm
+event team meeting /from 2026-08-28 /to 2026-08-29
 bye
 --- RESTART ---
 list
@@ -278,7 +322,7 @@ Got it. I've added this task:
 [D][ ] submit report (by: Aug 26 2026)
 Now you have 2 tasks in the list
 Got it. I've added this task:
-[E][ ] team meeting (from: Monday 2pm to: Monday 4pm)
+[E][ ] team meeting (from: Aug 28 2026 to: Aug 29 2026)
 Now you have 3 tasks in the list
 
 Goodbye! See you again soon.
@@ -291,7 +335,57 @@ What can I do for you?
 Here are the tasks in your list:
 1.[T][ ] read book
 2.[D][ ] submit report (by: Aug 26 2026)
-3.[E][ ] team meeting (from: Monday 2pm to: Monday 4pm)
+3.[E][ ] team meeting (from: Aug 28 2026 to: Aug 29 2026)
+
+Goodbye! See you again soon.
+```
+
+## TC-L7-02: Persist task descriptions containing pipes
+
+**Aim:** Preserve pipe characters in Todo, Deadline, and Event descriptions across a restart.
+
+### Inputs
+
+```console-input
+todo read | book
+deadline submit | report /by 2026-08-28
+event team | meeting /from 2026-08-28 /to 2026-08-29
+bye
+--- RESTART ---
+list
+bye
+```
+
+### Expected output
+
+```console-output
+========================================
+                 TASQUE                 
+========================================
+
+Hello! I'm Tasque.
+What can I do for you?
+Got it. I've added this task:
+[T][ ] read | book
+Now you have 1 tasks in the list
+Got it. I've added this task:
+[D][ ] submit | report (by: Aug 28 2026)
+Now you have 2 tasks in the list
+Got it. I've added this task:
+[E][ ] team | meeting (from: Aug 28 2026 to: Aug 29 2026)
+Now you have 3 tasks in the list
+
+Goodbye! See you again soon.
+========================================
+                 TASQUE                 
+========================================
+
+Hello! I'm Tasque.
+What can I do for you?
+Here are the tasks in your list:
+1.[T][ ] read | book
+2.[D][ ] submit | report (by: Aug 28 2026)
+3.[E][ ] team | meeting (from: Aug 28 2026 to: Aug 29 2026)
 
 Goodbye! See you again soon.
 ```
@@ -376,12 +470,12 @@ Goodbye! See you again soon.
 
 ```console-input
 event
-event /from Mon 2pm /to 4pm
-event project meeting /to 4pm
-event project meeting /from Mon 2pm
-event project meeting /from /to 4pm
-event project meeting /from Mon 2pm /to
-event project meeting /from Mon 2pm /to 4pm
+event /from 2026-08-28 /to 2026-08-29
+event project meeting /to 2026-08-29
+event project meeting /from 2026-08-28
+event project meeting /from /to 2026-08-29
+event project meeting /from 2026-08-28 /to
+event project meeting /from 2026-08-28 /to 2026-08-29
 list
 bye
 ```
@@ -402,10 +496,10 @@ OOPS!!! An event must include /to followed by its end.
 OOPS!!! The /from value of an event cannot be empty.
 OOPS!!! The /to value of an event cannot be empty.
 Got it. I've added this task:
-[E][ ] project meeting (from: Mon 2pm to: 4pm)
+[E][ ] project meeting (from: Aug 28 2026 to: Aug 29 2026)
 Now you have 1 tasks in the list
 Here are the tasks in your list:
-1.[E][ ] project meeting (from: Mon 2pm to: 4pm)
+1.[E][ ] project meeting (from: Aug 28 2026 to: Aug 29 2026)
 
 Goodbye! See you again soon.
 ```
@@ -531,7 +625,7 @@ Goodbye! See you again soon.
 ### Inputs
 
 ```console-input
-event project meeting /from Mon 2pm /to 4pm
+event project meeting /from 2026-08-28 /to 2026-08-29
 list
 bye
 ```
@@ -546,10 +640,10 @@ bye
 Hello! I'm Tasque.
 What can I do for you?
 Got it. I've added this task:
-[E][ ] project meeting (from: Mon 2pm to: 4pm)
+[E][ ] project meeting (from: Aug 28 2026 to: Aug 29 2026)
 Now you have 1 tasks in the list
 Here are the tasks in your list:
-1.[E][ ] project meeting (from: Mon 2pm to: 4pm)
+1.[E][ ] project meeting (from: Aug 28 2026 to: Aug 29 2026)
 
 Goodbye! See you again soon.
 ```
@@ -563,7 +657,7 @@ Goodbye! See you again soon.
 ```console-input
 todo borrow book
 deadline return book /by 2026-08-26
-event project meeting /from Mon 2pm /to 4pm
+event project meeting /from 2026-08-28 /to 2026-08-29
 mark 1
 mark 2
 mark 3
@@ -591,28 +685,28 @@ Got it. I've added this task:
 [D][ ] return book (by: Aug 26 2026)
 Now you have 2 tasks in the list
 Got it. I've added this task:
-[E][ ] project meeting (from: Mon 2pm to: 4pm)
+[E][ ] project meeting (from: Aug 28 2026 to: Aug 29 2026)
 Now you have 3 tasks in the list
 Nice! I've marked this task as done:
 [T][X] borrow book
 Nice! I've marked this task as done:
 [D][X] return book (by: Aug 26 2026)
 Nice! I've marked this task as done:
-[E][X] project meeting (from: Mon 2pm to: 4pm)
+[E][X] project meeting (from: Aug 28 2026 to: Aug 29 2026)
 Here are the tasks in your list:
 1.[T][X] borrow book
 2.[D][X] return book (by: Aug 26 2026)
-3.[E][X] project meeting (from: Mon 2pm to: 4pm)
+3.[E][X] project meeting (from: Aug 28 2026 to: Aug 29 2026)
 OK, I've marked this task as not done yet:
 [T][ ] borrow book
 OK, I've marked this task as not done yet:
 [D][ ] return book (by: Aug 26 2026)
 OK, I've marked this task as not done yet:
-[E][ ] project meeting (from: Mon 2pm to: 4pm)
+[E][ ] project meeting (from: Aug 28 2026 to: Aug 29 2026)
 Here are the tasks in your list:
 1.[T][ ] borrow book
 2.[D][ ] return book (by: Aug 26 2026)
-3.[E][ ] project meeting (from: Mon 2pm to: 4pm)
+3.[E][ ] project meeting (from: Aug 28 2026 to: Aug 29 2026)
 
 Goodbye! See you again soon.
 ```
@@ -659,7 +753,7 @@ Goodbye! See you again soon.
 ```console-input
 todo first task
 deadline second task /by 2026-08-26
-event third task /from Mon 2pm /to 4pm
+event third task /from 2026-08-28 /to 2026-08-29
 todo fourth task
 delete 1
 list
@@ -687,7 +781,7 @@ Got it. I've added this task:
 [D][ ] second task (by: Aug 26 2026)
 Now you have 2 tasks in the list
 Got it. I've added this task:
-[E][ ] third task (from: Mon 2pm to: 4pm)
+[E][ ] third task (from: Aug 28 2026 to: Aug 29 2026)
 Now you have 3 tasks in the list
 Got it. I've added this task:
 [T][ ] fourth task
@@ -697,10 +791,10 @@ Noted. I've removed this task:
 Now you have 3 tasks in the list
 Here are the tasks in your list:
 1.[D][ ] second task (by: Aug 26 2026)
-2.[E][ ] third task (from: Mon 2pm to: 4pm)
+2.[E][ ] third task (from: Aug 28 2026 to: Aug 29 2026)
 3.[T][ ] fourth task
 Noted. I've removed this task:
-[E][ ] third task (from: Mon 2pm to: 4pm)
+[E][ ] third task (from: Aug 28 2026 to: Aug 29 2026)
 Now you have 2 tasks in the list
 Here are the tasks in your list:
 1.[D][ ] second task (by: Aug 26 2026)
