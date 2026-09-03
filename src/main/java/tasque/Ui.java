@@ -114,9 +114,10 @@ public class Ui {
      * @return Formatted task-added response.
      */
     public String getTaskAddedMessage(Task task, int numberOfTasks) {
-        return "Got it. I've added this task:\n"
-                + task + "\n"
-                + "Now you have " + numberOfTasks + " tasks in the list";
+        return joinLines(
+                "Got it. I've added this task:",
+                String.valueOf(task),
+                "Now you have " + numberOfTasks + " tasks in the list");
     }
 
     /**
@@ -126,7 +127,9 @@ public class Ui {
      * @return Formatted task-marked response.
      */
     public String getTaskMarkedMessage(Task task) {
-        return "Nice! I've marked this task as done:\n" + task;
+        return joinLines(
+                "Nice! I've marked this task as done:",
+                String.valueOf(task));
     }
 
     /**
@@ -136,7 +139,9 @@ public class Ui {
      * @return Formatted task-unmarked response.
      */
     public String getTaskUnmarkedMessage(Task task) {
-        return "OK, I've marked this task as not done yet:\n" + task;
+        return joinLines(
+                "OK, I've marked this task as not done yet:",
+                String.valueOf(task));
     }
 
     /**
@@ -147,9 +152,14 @@ public class Ui {
      * @return Formatted task-deleted response.
      */
     public String getTaskDeletedMessage(Task task, int numberOfTasks) {
-        return "Noted. I've removed this task:\n"
-                + task + "\n"
-                + "Now you have " + numberOfTasks + " tasks in the list";
+        return joinLines(
+                "Noted. I've removed this task:",
+                String.valueOf(task),
+                "Now you have " + numberOfTasks + " tasks in the list");
+    }
+
+    private String joinLines(String... lines) {
+        return String.join("\n", lines);
     }
 
     private String getNumberedTaskList(String heading, List<Task> tasks) {
