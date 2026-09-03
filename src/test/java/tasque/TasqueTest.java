@@ -20,6 +20,67 @@ public class TasqueTest {
     Path tempDirectory;
 
     @Test
+    public void getResponse_supportedCommands_returnsExpectedResponses() {
+        Path storagePath = this.tempDirectory.resolve("data").resolve("tasque.txt");
+        Tasque tasque = new Tasque(storagePath.toString());
+
+        assertEquals("Hello! I'm Tasque.\nWhat can I do for you?", tasque.getWelcomeMessage());
+        assertEquals("Got it. I've added this task:\n"
+                + "[T][ ] read book\n"
+                + "Now you have 1 tasks in the list", tasque.getResponse("todo read book"));
+        assertEquals("Got it. I've added this task:\n"
+                + "[D][ ] submit report (by: Aug 26 2026)\n"
+                + "Now you have 2 tasks in the list",
+                tasque.getResponse("deadline submit report /by 2026-08-26"));
+        assertEquals("Got it. I've added this task:\n"
+                + "[E][ ] project meeting (from: Aug 28 2026 to: Aug 29 2026)\n"
+                + "Now you have 3 tasks in the list",
+                tasque.getResponse("event project meeting /from 2026-08-28 /to 2026-08-29"));
+        assertEquals("Here are the tasks in your list:\n"
+                + "1.[T][ ] read book\n"
+                + "2.[D][ ] submit report (by: Aug 26 2026)\n"
+                + "3.[E][ ] project meeting (from: Aug 28 2026 to: Aug 29 2026)",
+                tasque.getResponse("list"));
+        assertEquals("Nice! I've marked this task as done:\n[T][X] read book",
+                tasque.getResponse("mark 1"));
+        assertEquals("OK, I've marked this task as not done yet:\n[T][ ] read book",
+                tasque.getResponse("unmark 1"));
+        assertEquals("Here are the matching tasks in your list:\n"
+                + "1.[E][ ] project meeting (from: Aug 28 2026 to: Aug 29 2026)",
+                tasque.getResponse("find meeting"));
+        assertEquals("Noted. I've removed this task:\n"
+                + "[D][ ] submit report (by: Aug 26 2026)\n"
+                + "Now you have 2 tasks in the list", tasque.getResponse("delete 2"));
+        assertEquals("Goodbye! See you again soon.", tasque.getResponse("bye"));
+    }
+
+    @Test
+    public void getResponse_invalidInput_returnsErrorAndKeepsSessionUsable() {
+        Path storagePath = this.tempDirectory.resolve("data").resolve("tasque.txt");
+        Tasque tasque = new Tasque(storagePath.toString());
+
+        assertEquals("OOPS!!! I do not recognize that command.", tasque.getResponse("unknown"));
+        assertEquals("OOPS!!! Please enter the date as yyyy-MM-dd.",
+                tasque.getResponse("deadline submit report /by tomorrow"));
+        assertEquals("Got it. I've added this task:\n"
+                + "[T][ ] session continues\n"
+                + "Now you have 1 tasks in the list", tasque.getResponse("todo session continues"));
+    }
+
+    @Test
+    public void getResponse_mutatingCommands_persistForNewSession() {
+        Path storagePath = this.tempDirectory.resolve("data").resolve("tasque.txt");
+        Tasque firstSession = new Tasque(storagePath.toString());
+        firstSession.getResponse("todo persistent task");
+        firstSession.getResponse("mark 1");
+
+        Tasque secondSession = new Tasque(storagePath.toString());
+
+        assertEquals("Here are the tasks in your list:\n1.[T][X] persistent task",
+                secondSession.getResponse("list"));
+    }
+
+    @Test
     public void run_saveFails_doesNotReportSuccessOrKeepMutations() throws Exception {
         Path dataDirectory = Files.createDirectory(this.tempDirectory.resolve("data"));
         Path storagePath = dataDirectory.resolve("tasque.txt");

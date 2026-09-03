@@ -6,9 +6,15 @@ import java.util.Scanner;
 import tasque.task.Task;
 
 /**
- * Reads commands from and displays messages in the console.
+ * Reads console commands, formats responses, and displays console messages.
  */
 public class Ui {
+    private static final String BANNER = "========================================\n"
+            + "                 TASQUE                 \n"
+            + "========================================";
+    private static final String WELCOME_MESSAGE = "Hello! I'm Tasque.\nWhat can I do for you?";
+    private static final String EXIT_MESSAGE = "Goodbye! See you again soon.";
+
     private final Scanner scanner;
 
     /**
@@ -31,95 +37,126 @@ public class Ui {
      * Displays the welcome message and application banner.
      */
     public void showWelcome() {
-        String banner = "========================================\n"
-                + "                 TASQUE                 \n"
-                + "========================================";
-        String greet = "\nHello! I'm Tasque.\nWhat can I do for you?";
-        System.out.println(banner);
-        System.out.println(greet);
+        System.out.println(BANNER);
+        System.out.println();
+        System.out.println(WELCOME_MESSAGE);
     }
 
     /**
-     * Displays an error message returned by command processing.
+     * Returns the greeting shown when Tasque starts.
      *
-     * @param errorMessage Error message to print.
+     * @return Tasque greeting.
      */
-    public void showError(String errorMessage) {
-        System.out.println("OOPS!!! " + errorMessage);
+    public String getWelcomeMessage() {
+        return WELCOME_MESSAGE;
+    }
+
+    /**
+     * Displays a response produced by Tasque.
+     *
+     * @param response Response to print.
+     */
+    public void showResponse(String response) {
+        System.out.println(response);
+    }
+
+    /**
+     * Returns a formatted error response.
+     *
+     * @param errorMessage Message describing the error.
+     * @return Formatted error response.
+     */
+    public String getErrorMessage(String errorMessage) {
+        return "OOPS!!! " + errorMessage;
     }
 
     /**
      * Displays the message shown when the application exits.
      */
     public void showExit() {
-        System.out.print("\nGoodbye! See you again soon.");
+        System.out.print("\n" + EXIT_MESSAGE);
     }
 
     /**
-     * Displays all tasks with their one-based list positions.
+     * Returns the message shown when the application exits.
      *
-     * @param tasks Tasks to print.
+     * @return Exit message.
      */
-    public void showTaskList(List<Task> tasks) {
-        System.out.println("Here are the tasks in your list:");
-        for (int i = 0; i < tasks.size(); i++) {
-            System.out.println((i + 1) + "." + tasks.get(i));
-        }
+    public String getExitMessage() {
+        return EXIT_MESSAGE;
     }
 
     /**
-     * Displays the tasks whose descriptions match a Find keyword.
+     * Returns all tasks with their one-based list positions.
      *
-     * @param tasks Matching tasks to display.
+     * @param tasks Tasks to include.
+     * @return Formatted task-list response.
      */
-    public void showMatchingTasks(List<Task> tasks) {
-        System.out.println("Here are the matching tasks in your list:");
-        for (int i = 0; i < tasks.size(); i++) {
-            System.out.println((i + 1) + "." + tasks.get(i));
-        }
+    public String getTaskListMessage(List<Task> tasks) {
+        return getNumberedTaskList("Here are the tasks in your list:", tasks);
     }
 
     /**
-     * Displays confirmation after a task has been added.
+     * Returns the tasks whose descriptions match a Find keyword.
+     *
+     * @param tasks Matching tasks to include.
+     * @return Formatted matching-task response.
+     */
+    public String getMatchingTasksMessage(List<Task> tasks) {
+        return getNumberedTaskList("Here are the matching tasks in your list:", tasks);
+    }
+
+    /**
+     * Returns confirmation after a task has been added.
      *
      * @param task Task that was added.
      * @param numberOfTasks Number of tasks after the addition.
+     * @return Formatted task-added response.
      */
-    public void showTaskAdded(Task task, int numberOfTasks) {
-        System.out.println("Got it. I've added this task:");
-        System.out.println(task);
-        System.out.println("Now you have " + numberOfTasks + " tasks in the list");
+    public String getTaskAddedMessage(Task task, int numberOfTasks) {
+        return "Got it. I've added this task:\n"
+                + task + "\n"
+                + "Now you have " + numberOfTasks + " tasks in the list";
     }
 
     /**
-     * Displays confirmation after a task has been marked done.
+     * Returns confirmation after a task has been marked done.
      *
      * @param task Task that was marked done.
+     * @return Formatted task-marked response.
      */
-    public void showTaskMarked(Task task) {
-        System.out.println("Nice! I've marked this task as done:");
-        System.out.println(task);
+    public String getTaskMarkedMessage(Task task) {
+        return "Nice! I've marked this task as done:\n" + task;
     }
 
     /**
-     * Displays confirmation after a task has been marked not done.
+     * Returns confirmation after a task has been marked not done.
      *
      * @param task Task that was marked not done.
+     * @return Formatted task-unmarked response.
      */
-    public void showTaskUnmarked(Task task) {
-        System.out.println("OK, I've marked this task as not done yet:");
-        System.out.println(task);
+    public String getTaskUnmarkedMessage(Task task) {
+        return "OK, I've marked this task as not done yet:\n" + task;
     }
 
     /**
-     * Displays confirmation after a task has been deleted.
+     * Returns confirmation after a task has been deleted.
      *
      * @param task Task that was deleted.
      * @param numberOfTasks Number of tasks after the deletion.
+     * @return Formatted task-deleted response.
      */
-    public void showTaskDeleted(Task task, int numberOfTasks) {
-        System.out.println("Noted. I've removed this task:");
-        System.out.println(task);
-        System.out.println("Now you have " + numberOfTasks + " tasks in the list");
+    public String getTaskDeletedMessage(Task task, int numberOfTasks) {
+        return "Noted. I've removed this task:\n"
+                + task + "\n"
+                + "Now you have " + numberOfTasks + " tasks in the list";
+    }
+
+    private String getNumberedTaskList(String heading, List<Task> tasks) {
+        StringBuilder message = new StringBuilder(heading);
+        for (int i = 0; i < tasks.size(); i++) {
+            message.append("\n").append(i + 1).append(".").append(tasks.get(i));
+        }
+        return message.toString();
     }
 }

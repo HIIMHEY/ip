@@ -34,47 +34,66 @@ public class Tasque {
         boolean shouldExit = false;
         while (!shouldExit) {
             String userInput = this.ui.readCommand();
-            try {
-                String command = this.parser.parseCommand(userInput);
-                switch (command) {
-                    case "bye":
-                        shouldExit = true;
-                        break;
-                    case "list":
-                        this.ui.showTaskList(this.tasks.getTasks());
-                        break;
-                    case "mark":
-                        markTask(userInput);
-                        break;
-                    case "unmark":
-                        unmarkTask(userInput);
-                        break;
-                    case "todo":
-                        addTask(this.parser.parseTodo(userInput));
-                        break;
-                    case "deadline":
-                        addTask(this.parser.parseDeadline(userInput));
-                        break;
-                    case "event":
-                        addTask(this.parser.parseEvent(userInput));
-                        break;
-                    case "delete":
-                        deleteTask(userInput);
-                        break;
-                    case "find":
-                        findTask(userInput);
-                        break;
-                    default:
-                        throw new TasqueException("I do not recognize that command.");
-                }
-            } catch (TasqueException e) {
-                this.ui.showError(e.getMessage());
+            String response = getResponse(userInput);
+            if (userInput.equals("bye")) {
+                shouldExit = true;
+            } else {
+                this.ui.showResponse(response);
             }
         }
         this.ui.showExit();
     }
 
-    private void addTask(Task task) throws TasqueException {
+    /**
+     * Returns the greeting displayed when a GUI session starts.
+     *
+     * @return Tasque greeting.
+     */
+    public String getWelcomeMessage() {
+        return this.ui.getWelcomeMessage();
+    }
+
+    /**
+     * Processes one user command and returns its user-facing response.
+     *
+     * @param userInput Command entered by the user.
+     * @return Response to display to the user.
+     */
+    public String getResponse(String userInput) {
+        try {
+            return executeCommand(userInput);
+        } catch (TasqueException e) {
+            return this.ui.getErrorMessage(e.getMessage());
+        }
+    }
+
+    private String executeCommand(String userInput) throws TasqueException {
+        String command = this.parser.parseCommand(userInput);
+        switch (command) {
+            case "bye":
+                return this.ui.getExitMessage();
+            case "list":
+                return this.ui.getTaskListMessage(this.tasks.getTasks());
+            case "mark":
+                return markTask(userInput);
+            case "unmark":
+                return unmarkTask(userInput);
+            case "todo":
+                return addTask(this.parser.parseTodo(userInput));
+            case "deadline":
+                return addTask(this.parser.parseDeadline(userInput));
+            case "event":
+                return addTask(this.parser.parseEvent(userInput));
+            case "delete":
+                return deleteTask(userInput);
+            case "find":
+                return findTask(userInput);
+            default:
+                throw new TasqueException("I do not recognize that command.");
+        }
+    }
+
+    private String addTask(Task task) throws TasqueException {
         this.tasks.add(task);
         try {
             saveTasks();
@@ -82,10 +101,10 @@ public class Tasque {
             this.tasks.delete(this.tasks.getSize());
             throw e;
         }
-        this.ui.showTaskAdded(task, this.tasks.getSize());
+        return this.ui.getTaskAddedMessage(task, this.tasks.getSize());
     }
 
-    private void deleteTask(String userInput) throws TasqueException {
+    private String deleteTask(String userInput) throws TasqueException {
         int taskNumber = this.parser.parseTaskNumber(
                 userInput, "delete", this.tasks.getSize());
         Task deletedTask = this.tasks.delete(taskNumber);
@@ -95,10 +114,10 @@ public class Tasque {
             this.tasks.add(taskNumber, deletedTask);
             throw e;
         }
-        this.ui.showTaskDeleted(deletedTask, this.tasks.getSize());
+        return this.ui.getTaskDeletedMessage(deletedTask, this.tasks.getSize());
     }
 
-    private void markTask(String userInput) throws TasqueException {
+    private String markTask(String userInput) throws TasqueException {
         int taskNumber = this.parser.parseTaskNumber(
                 userInput, "mark", this.tasks.getSize());
         boolean wasDone = this.tasks.getTasks().get(taskNumber - 1).isDone();
@@ -109,10 +128,10 @@ public class Tasque {
             restoreCompletion(markedTask, wasDone);
             throw e;
         }
-        this.ui.showTaskMarked(markedTask);
+        return this.ui.getTaskMarkedMessage(markedTask);
     }
 
-    private void unmarkTask(String userInput) throws TasqueException {
+    private String unmarkTask(String userInput) throws TasqueException {
         int taskNumber = this.parser.parseTaskNumber(
                 userInput, "unmark", this.tasks.getSize());
         boolean wasDone = this.tasks.getTasks().get(taskNumber - 1).isDone();
@@ -123,7 +142,7 @@ public class Tasque {
             restoreCompletion(unmarkedTask, wasDone);
             throw e;
         }
-        this.ui.showTaskUnmarked(unmarkedTask);
+        return this.ui.getTaskUnmarkedMessage(unmarkedTask);
     }
 
     private void saveTasks() throws TasqueException {
@@ -138,10 +157,10 @@ public class Tasque {
         }
     }
 
-    private void findTask(String userInput) throws TasqueException {
+    private String findTask(String userInput) throws TasqueException {
         String keyword = this.parser.parseFindKeyword(userInput);
         List<Task> matchingTasks = this.tasks.findTasks(keyword);
-        this.ui.showMatchingTasks(matchingTasks);
+        return this.ui.getMatchingTasksMessage(matchingTasks);
     }
 
     /**
