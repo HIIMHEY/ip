@@ -122,9 +122,9 @@ if ($caseMatches.Count -ne $declaredCases.Count) {
 }
 
 $sourceDirectory = Join-Path $repoRoot "src\main\java"
-$sourceFiles = @(Get-ChildItem -LiteralPath $sourceDirectory -Filter "*.java" -File -Recurse | Sort-Object FullName)
-if ($sourceFiles.Count -eq 0) {
-    Write-Error "No Java source files found in $sourceDirectory"
+$consoleEntryPoint = Join-Path $sourceDirectory "tasque\Tasque.java"
+if (-not (Test-Path -LiteralPath $consoleEntryPoint -PathType Leaf)) {
+    Write-Error "Console entry point not found: $consoleEntryPoint"
     exit 1
 }
 
@@ -133,8 +133,9 @@ $sessionDirectory = Join-Path $repoRoot ("_temp\test-ui\" + $sessionId)
 $classesDirectory = Join-Path $sessionDirectory "classes"
 [void](New-Item -ItemType Directory -Path $classesDirectory -Force)
 
-$quotedSources = @($sourceFiles | ForEach-Object { Quote-Argument $_.FullName })
-$compileArguments = "-d " + (Quote-Argument $classesDirectory) + " " + ($quotedSources -join " ")
+$compileArguments = "-sourcepath " + (Quote-Argument $sourceDirectory) `
+    + " -d " + (Quote-Argument $classesDirectory) `
+    + " " + (Quote-Argument $consoleEntryPoint)
 $compileResult = Invoke-CapturedProcess `
     -FileName "javac" `
     -Arguments $compileArguments `
