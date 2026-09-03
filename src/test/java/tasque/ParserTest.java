@@ -2,6 +2,7 @@ package tasque;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import org.junit.jupiter.api.Test;
 
 public class ParserTest {
@@ -27,24 +28,24 @@ public class ParserTest {
     @Test
     public void parseTaskNumber_missingTaskNumber_throwsTasqueException() {
         Parser parser = new Parser();
-        TasqueException exception = assertThrows(TasqueException.class,
-                () -> parser.parseTaskNumber("delete", "delete", 5));
+        TasqueException exception = assertThrows(TasqueException.class, () -> parser.parseTaskNumber(
+                "delete", "delete", 5));
         assertEquals("The delete command needs a task number.", exception.getMessage());
     }
 
     @Test
     public void parseTaskNumber_zeroTaskNumber_throwsTasqueException() {
         Parser parser = new Parser();
-        TasqueException exception = assertThrows(TasqueException.class,
-                () -> parser.parseTaskNumber("delete 0", "delete", 5));
+        TasqueException exception = assertThrows(TasqueException.class, () -> parser.parseTaskNumber(
+                "delete 0", "delete", 5));
         assertEquals("The task number must be a positive whole number.", exception.getMessage());
     }
 
     @Test
     public void parseTaskNumber_taskNumberPastEnd_throwsTasqueException() {
         Parser parser = new Parser();
-        TasqueException exception = assertThrows(TasqueException.class,
-                () -> parser.parseTaskNumber("delete 6", "delete", 5));
+        TasqueException exception = assertThrows(TasqueException.class, () -> parser.parseTaskNumber(
+                "delete 6", "delete", 5));
         assertEquals("Task 6 does not exist in the list.", exception.getMessage());
     }
 
@@ -65,8 +66,8 @@ public class ParserTest {
     @Test
     public void parseFindKeyword_missingKeyword_throwsTasqueException() {
         Parser parser = new Parser();
-        TasqueException exception = assertThrows(TasqueException.class,
-                () -> parser.parseFindKeyword("find   "));
+        TasqueException exception = assertThrows(TasqueException.class, () -> parser.parseFindKeyword(
+                "find   "));
         assertEquals("The find command needs a keyword.", exception.getMessage());
     }
 
@@ -84,8 +85,8 @@ public class ParserTest {
     public void parseEvent_invalidDate_throwsTasqueException() {
         Parser parser = new Parser();
 
-        TasqueException exception = assertThrows(TasqueException.class,
-                () -> parser.parseEvent("event project meeting /from tomorrow /to 2026-08-29"));
+        TasqueException exception = assertThrows(TasqueException.class, () -> parser.parseEvent(
+                "event project meeting /from tomorrow /to 2026-08-29"));
 
         assertEquals("Please enter the dates as yyyy-MM-dd.", exception.getMessage());
     }
