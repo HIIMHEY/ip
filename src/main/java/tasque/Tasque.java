@@ -120,8 +120,11 @@ public class Tasque {
     private String markTask(String userInput) throws TasqueException {
         int taskNumber = this.parser.parseTaskNumber(
                 userInput, "mark", this.tasks.getSize());
+        assert 1 <= taskNumber && taskNumber <= this.tasks.getSize()
+                : "Check that taskNumber is within range of the task list";
         boolean wasDone = this.tasks.getTasks().get(taskNumber - 1).isDone();
         Task markedTask = this.tasks.markAsDone(taskNumber);
+        assert markedTask.isDone() : "Check if task is actually marked as done";
         try {
             saveTasks();
         } catch (TasqueException e) {
@@ -155,6 +158,8 @@ public class Tasque {
         } else {
             task.markAsNotDone();
         }
+        assert task.isDone() == wasDone
+                : "Rollback must restore the previous completion state";
     }
 
     private String findTask(String userInput) throws TasqueException {
