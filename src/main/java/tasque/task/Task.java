@@ -7,6 +7,11 @@ import java.util.Base64;
  * Represents a task with a description, type, and completion state.
  */
 public class Task {
+    // The suffix distinguishes Base64 descriptions from legacy plain-text records.
+    private static final String ENCODED_DESCRIPTION_SUFFIX = "2";
+    private static final String COMPLETED_MARKER = "1";
+    private static final String INCOMPLETE_MARKER = "0";
+
     protected String description;
     protected boolean isDone;
     protected TaskType type;
@@ -72,8 +77,8 @@ public class Task {
     public String toStorageString() {
         String encodedDescription = Base64.getEncoder().encodeToString(
                 this.description.getBytes(StandardCharsets.UTF_8));
-        return this.type.getSymbol() + "2 | "
-                + (this.isDone ? "1" : "0") + " | "
+        return this.type.getSymbol() + ENCODED_DESCRIPTION_SUFFIX + " | "
+                + (this.isDone ? COMPLETED_MARKER : INCOMPLETE_MARKER) + " | "
                 + encodedDescription;
     }
 

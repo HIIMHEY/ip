@@ -23,6 +23,16 @@ import tasque.task.Todo;
  * Loads and saves Tasque tasks using the application's storage format.
  */
 public class Storage {
+    private static final int TASK_MARKER_INDEX = 0;
+    private static final int COMPLETION_INDEX = 1;
+    private static final int DESCRIPTION_INDEX = 2;
+    private static final int DEADLINE_DATE_INDEX = 3;
+    private static final int EVENT_START_INDEX = 3;
+    private static final int EVENT_END_INDEX = 4;
+    // The suffix distinguishes Base64 descriptions from legacy plain-text records.
+    private static final String ENCODED_DESCRIPTION_SUFFIX = "2";
+    private static final String COMPLETED_MARKER = "1";
+
     private final String filePath;
 
     /**
@@ -47,23 +57,21 @@ public class Storage {
         try {
             Files.createDirectories(parentDirectory);
             temporaryPath = Files.createTempFile(parentDirectory, ".tasque-", ".tmp");
-            try (BufferedWriter taskWriter = Files.newBufferedWriter(
-                    temporaryPath, StandardCharsets.UTF_8)) {
-                for (Task task : tasks) {
-                    taskWriter.write(task.toStorageString());
-                    taskWriter.write(System.lineSeparator());
-                }
-            }
+            writeTasksToFile(temporaryPath, tasks);
             replaceStorageFile(temporaryPath, tasquePath);
         } catch (IOException e) {
             throw new TasqueException("I couldn't save your tasks.");
         } finally {
-            if (temporaryPath != null) {
-                try {
-                    Files.deleteIfExists(temporaryPath);
-                } catch (IOException e) {
-                    // The save result is known; leave cleanup to the operating system.
-                }
+            cleanupTemporaryFile(temporaryPath);
+        }
+    }
+
+    private void writeTasksToFile(Path temporaryPath, List<Task> tasks) throws IOException {
+        try (BufferedWriter taskWriter = Files.newBufferedWriter(
+                temporaryPath, StandardCharsets.UTF_8)) {
+            for (Task task : tasks) {
+                taskWriter.write(task.toStorageString());
+                taskWriter.write(System.lineSeparator());
             }
         }
     }
@@ -74,6 +82,17 @@ public class Storage {
                     StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING);
         } catch (AtomicMoveNotSupportedException e) {
             Files.move(temporaryPath, tasquePath, StandardCopyOption.REPLACE_EXISTING);
+        }
+    }
+
+    private void cleanupTemporaryFile(Path temporaryPath) {
+        if (temporaryPath == null) {
+            return;
+        }
+        try {
+            Files.deleteIfExists(temporaryPath);
+        } catch (IOException e) {
+            // Cleanup failure must not replace the original save outcome.
         }
     }
 
@@ -100,27 +119,28 @@ public class Storage {
 
     private Task parseStoredTask(String storageString) {
         String[] parts = storageString.split("\\|", -1);
-        String taskType = parts[0].trim();
-        boolean hasEncodedDescription = taskType.endsWith("2");
-        if (hasEncodedDescription) {
-            taskType = taskType.substring(0, taskType.length() - 1);
-        }
+        String storedTaskMarker = parts[TASK_MARKER_INDEX].trim();
+        boolean hasEncodedDescription = storedTaskMarker.endsWith(ENCODED_DESCRIPTION_SUFFIX);
+        String taskTypeSymbol = hasEncodedDescription
+                ? storedTaskMarker.substring(0, storedTaskMarker.length() - ENCODED_DESCRIPTION_SUFFIX.length())
+                : storedTaskMarker;
         String description = hasEncodedDescription
-                ? decodeDescription(parts[2].trim())
-                : parts[2].trim();
+                ? decodeDescription(parts[DESCRIPTION_INDEX].trim())
+                : parts[DESCRIPTION_INDEX].trim();
         Task task;
 
-        if (taskType.equals("T")) {
+        if (taskTypeSymbol.equals("T")) {
             task = new Todo(description);
-        } else if (taskType.equals("D")) {
-            task = new Deadline(description, parts[3].trim());
-        } else if (taskType.equals("E")) {
-            task = Event.fromStoredValues(description, parts[3].trim(), parts[4].trim());
+        } else if (taskTypeSymbol.equals("D")) {
+            task = new Deadline(description, parts[DEADLINE_DATE_INDEX].trim());
+        } else if (taskTypeSymbol.equals("E")) {
+            task = Event.fromStoredValues(description,
+                    parts[EVENT_START_INDEX].trim(), parts[EVENT_END_INDEX].trim());
         } else {
             return null;
         }
 
-        if (parts[1].trim().equals("1")) {
+        if (parts[COMPLETION_INDEX].trim().equals(COMPLETED_MARKER)) {
             task.markAsDone();
         }
         return task;
