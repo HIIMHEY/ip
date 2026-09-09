@@ -34,6 +34,11 @@ public class Event extends Task {
         this.to = to;
         this.legacyFrom = legacyFrom;
         this.legacyTo = legacyTo;
+        assert (this.from != null && this.to != null
+                && this.legacyFrom == null && this.legacyTo == null)
+                || (this.from == null && this.to == null
+                && this.legacyFrom != null && this.legacyTo != null)
+                : "Event must contain either two dates or two legacy values";
     }
 
     /**
