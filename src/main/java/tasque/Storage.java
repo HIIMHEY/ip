@@ -47,23 +47,21 @@ public class Storage {
         try {
             Files.createDirectories(parentDirectory);
             temporaryPath = Files.createTempFile(parentDirectory, ".tasque-", ".tmp");
-            try (BufferedWriter taskWriter = Files.newBufferedWriter(
-                    temporaryPath, StandardCharsets.UTF_8)) {
-                for (Task task : tasks) {
-                    taskWriter.write(task.toStorageString());
-                    taskWriter.write(System.lineSeparator());
-                }
-            }
+            writeTasksToFile(temporaryPath, tasks);
             replaceStorageFile(temporaryPath, tasquePath);
         } catch (IOException e) {
             throw new TasqueException("I couldn't save your tasks.");
         } finally {
-            if (temporaryPath != null) {
-                try {
-                    Files.deleteIfExists(temporaryPath);
-                } catch (IOException e) {
-                    // The save result is known; leave cleanup to the operating system.
-                }
+            cleanupTemporaryFile(temporaryPath);
+        }
+    }
+
+    private void writeTasksToFile(Path temporaryPath, List<Task> tasks) throws IOException {
+        try (BufferedWriter taskWriter = Files.newBufferedWriter(
+                temporaryPath, StandardCharsets.UTF_8)) {
+            for (Task task : tasks) {
+                taskWriter.write(task.toStorageString());
+                taskWriter.write(System.lineSeparator());
             }
         }
     }
@@ -74,6 +72,17 @@ public class Storage {
                     StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING);
         } catch (AtomicMoveNotSupportedException e) {
             Files.move(temporaryPath, tasquePath, StandardCopyOption.REPLACE_EXISTING);
+        }
+    }
+
+    private void cleanupTemporaryFile(Path temporaryPath) {
+        if (temporaryPath == null) {
+            return;
+        }
+        try {
+            Files.deleteIfExists(temporaryPath);
+        } catch (IOException e) {
+            // Cleanup failure must not replace the original save outcome.
         }
     }
 
