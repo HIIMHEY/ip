@@ -122,30 +122,31 @@ public class Tasque {
                 userInput, "mark", this.tasks.getSize());
         assert 1 <= taskNumber && taskNumber <= this.tasks.getSize()
                 : "Check that taskNumber is within range of the task list";
-        boolean wasDone = this.tasks.getTasks().get(taskNumber - 1).isDone();
-        Task markedTask = this.tasks.markAsDone(taskNumber);
-        assert markedTask.isDone() : "Check if task is actually marked as done";
-        try {
-            saveTasks();
-        } catch (TasqueException e) {
-            restoreCompletion(markedTask, wasDone);
-            throw e;
-        }
+        Task markedTask = updateTaskCompletion(taskNumber, true);
+        assert markedTask.isDone()
+                : "Check if task is actually marked as done";
         return this.ui.getTaskMarkedMessage(markedTask);
     }
 
     private String unmarkTask(String userInput) throws TasqueException {
         int taskNumber = this.parser.parseTaskNumber(
                 userInput, "unmark", this.tasks.getSize());
+        Task unmarkedTask = updateTaskCompletion(taskNumber, false);
+        return this.ui.getTaskUnmarkedMessage(unmarkedTask);
+    }
+
+    private Task updateTaskCompletion(int taskNumber, boolean isDone) throws TasqueException {
         boolean wasDone = this.tasks.getTasks().get(taskNumber - 1).isDone();
-        Task unmarkedTask = this.tasks.markAsNotDone(taskNumber);
+        Task updatedTask = isDone
+                ? this.tasks.markAsDone(taskNumber)
+                : this.tasks.markAsNotDone(taskNumber);
         try {
             saveTasks();
         } catch (TasqueException e) {
-            restoreCompletion(unmarkedTask, wasDone);
+            restoreCompletion(updatedTask, wasDone);
             throw e;
         }
-        return this.ui.getTaskUnmarkedMessage(unmarkedTask);
+        return updatedTask;
     }
 
     private void saveTasks() throws TasqueException {

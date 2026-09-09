@@ -116,6 +116,25 @@ public class TasqueTest {
         assertFalse(output.contains("third task"));
     }
 
+    @Test
+    public void getResponse_repeatedCompletionCommandsSaveFails_preservesPreviousStates() throws Exception {
+        Path dataDirectory = Files.createDirectory(this.tempDirectory.resolve("data"));
+        Path storagePath = dataDirectory.resolve("tasque.txt");
+        Files.writeString(storagePath, "T | 0 | first task\nT | 1 | second task\n");
+        Tasque tasque = new Tasque(storagePath.toString());
+
+        Files.delete(storagePath);
+        Files.delete(dataDirectory);
+        Files.writeString(dataDirectory, "blocks the storage directory");
+
+        String expectedList = "Here are the tasks in your list:\n"
+                + "1.[T][ ] first task\n2.[T][X] second task";
+        assertEquals("OOPS!!! I couldn't save your tasks.", tasque.getResponse("mark 2"));
+        assertEquals(expectedList, tasque.getResponse("list"));
+        assertEquals("OOPS!!! I couldn't save your tasks.", tasque.getResponse("unmark 1"));
+        assertEquals(expectedList, tasque.getResponse("list"));
+    }
+
     private int countOccurrences(String text, String target) {
         return text.split(java.util.regex.Pattern.quote(target), -1).length - 1;
     }
