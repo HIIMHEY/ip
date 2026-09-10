@@ -12,6 +12,32 @@ import tasque.task.Todo;
  */
 public class Parser {
     /**
+     * Expands a short command alias while preserving the rest of the input.
+     * Matches the existing parser's space-delimited, case-sensitive command syntax.
+     *
+     * @param userInput Command input to normalize.
+     * @return Input with a canonical command keyword, or the original unrecognized input.
+     */
+    public String normalizeCommand(String userInput) {
+        int spaceIndex = userInput.indexOf(' ');
+        int commandEnd = spaceIndex == -1 ? userInput.length() : spaceIndex;
+        String keyword = userInput.substring(0, commandEnd);
+        String canonical = switch (keyword) {
+            case "t" -> "todo";
+            case "d" -> "deadline";
+            case "e" -> "event";
+            case "l" -> "list";
+            case "m" -> "mark";
+            case "u" -> "unmark";
+            case "del" -> "delete";
+            case "f" -> "find";
+            case "b" -> "bye";
+            default -> keyword;
+        };
+        return canonical + userInput.substring(commandEnd);
+    }
+
+    /**
      * Parses the command keyword from the user's input.
      *
      * @param userInput User input to classify.

@@ -558,15 +558,17 @@ Here are the tasks in your list:
 Goodbye! See you again soon.
 ```
 
-## TC-L4-01: Create and list a Todo
+## TC-L4-01: Create and list a Todo using aliases
 
-**Aim:** Verify Todo creation and the `[T]` type marker in list output.
+**Aim:** Verify Todo creation and list output using aliases, and exit at b without processing later input.
 
 ### Inputs
 
 ```console-input
-todo borrow book
-list
+t borrow book
+l
+b
+todo should not be added
 bye
 ```
 

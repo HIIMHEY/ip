@@ -66,7 +66,7 @@ public class MainWindow extends AnchorPane {
                 DialogBox.getTasqueDialog(response, this.tasqueImage));
         this.userInput.clear();
 
-        if (input.equals("bye")) {
+        if (this.tasque.isExitCommand(input)) {
             exitAfterDelay();
         }
     }
