@@ -35,7 +35,7 @@ public class Tasque {
         while (!shouldExit) {
             String userInput = this.ui.readCommand();
             String response = getResponse(userInput);
-            if (userInput.equals("bye")) {
+            if (isExitCommand(userInput)) {
                 shouldExit = true;
             } else {
                 this.ui.showResponse(response);
@@ -67,7 +67,18 @@ public class Tasque {
         }
     }
 
+    /**
+     * Checks whether the input is the exit command or its alias.
+     *
+     * @param userInput Command entered by the user.
+     * @return Whether the interface should exit.
+     */
+    public boolean isExitCommand(String userInput) {
+        return this.parser.normalizeCommand(userInput).equals("bye");
+    }
+
     private String executeCommand(String userInput) throws TasqueException {
+        userInput = this.parser.normalizeCommand(userInput);
         String command = this.parser.parseCommand(userInput);
         switch (command) {
             case "bye":
