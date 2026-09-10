@@ -325,6 +325,7 @@ If reviewing an increment implemented by the user:
 * Do not add new production dependencies unless required by the specification or explicitly approved by the user.
 * For Java implementation, refactoring, review, or coding-standard checks, invoke and follow the project-local `seedu-java-coding-standard` skill.
 * When checking the SE-EDU Java coding standard, apply only rules relevant to the current increment and preserve grading-sensitive project choices such as an intentional default package.
+* For general code quality guidelines: https://nus-cs2103-ay2627-s1.github.io/website/se-book-adapted/chapters/codeQuality.html
 
 # Java and development environment
 
