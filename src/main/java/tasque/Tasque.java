@@ -77,8 +77,8 @@ public class Tasque {
         return this.parser.normalizeCommand(userInput).equals("bye");
     }
 
-    private String executeCommand(String userInput) throws TasqueException {
-        userInput = this.parser.normalizeCommand(userInput);
+    private String executeCommand(String rawUserInput) throws TasqueException {
+        String userInput = this.parser.normalizeCommand(rawUserInput);
         String command = this.parser.parseCommand(userInput);
         switch (command) {
             case "bye":
